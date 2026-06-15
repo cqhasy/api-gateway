@@ -11,6 +11,7 @@ import (
 	"github.com/songquanpeng/one-api/relay/adaptor"
 	"github.com/songquanpeng/one-api/relay/meta"
 	"github.com/songquanpeng/one-api/relay/model"
+	"github.com/songquanpeng/one-api/relay/relaymode"
 )
 
 type Adaptor struct {
@@ -62,6 +63,15 @@ func (a *Adaptor) DoRequest(c *gin.Context, meta *meta.Meta, requestBody io.Read
 }
 
 func (a *Adaptor) DoResponse(c *gin.Context, resp *http.Response, meta *meta.Meta) (usage *model.Usage, err *model.ErrorWithStatusCode) {
+	if meta.Mode == relaymode.AnthropicMessages {
+		// Passthrough mode: return raw Anthropic response without converting to OpenAI format
+		if meta.IsStream {
+			err, usage = PassthroughStreamHandler(c, resp)
+		} else {
+			err, usage = PassthroughHandler(c, resp)
+		}
+		return
+	}
 	if meta.IsStream {
 		err, usage = StreamHandler(c, resp)
 	} else {

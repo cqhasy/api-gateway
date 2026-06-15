@@ -377,3 +377,105 @@ func Handler(c *gin.Context, resp *http.Response, promptTokens int, modelName st
 	_, err = c.Writer.Write(jsonResponse)
 	return nil, &usage
 }
+
+// PassthroughHandler handles Anthropic-native responses without converting to OpenAI format.
+func PassthroughHandler(c *gin.Context, resp *http.Response) (*model.ErrorWithStatusCode, *model.Usage) {
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return openai.ErrorWrapper(err, "read_response_body_failed", http.StatusInternalServerError), nil
+	}
+	err = resp.Body.Close()
+	if err != nil {
+		return openai.ErrorWrapper(err, "close_response_body_failed", http.StatusInternalServerError), nil
+	}
+	var claudeResponse Response
+	err = json.Unmarshal(responseBody, &claudeResponse)
+	if err != nil {
+		return openai.ErrorWrapper(err, "unmarshal_response_body_failed", http.StatusInternalServerError), nil
+	}
+	if claudeResponse.Error.Type != "" {
+		return &model.ErrorWithStatusCode{
+			Error: model.Error{
+				Message: claudeResponse.Error.Message,
+				Type:    claudeResponse.Error.Type,
+				Param:   "",
+				Code:    claudeResponse.Error.Type,
+			},
+			StatusCode: resp.StatusCode,
+		}, nil
+	}
+
+	usage := model.Usage{
+		PromptTokens:     claudeResponse.Usage.InputTokens,
+		CompletionTokens: claudeResponse.Usage.OutputTokens,
+		TotalTokens:      claudeResponse.Usage.InputTokens + claudeResponse.Usage.OutputTokens,
+	}
+
+	// Write the raw Anthropic response back to the client
+	c.Writer.Header().Set("Content-Type", "application/json")
+	c.Writer.WriteHeader(resp.StatusCode)
+	_, err = c.Writer.Write(responseBody)
+	return nil, &usage
+}
+
+// PassthroughStreamHandler handles Anthropic-native streaming responses without conversion.
+func PassthroughStreamHandler(c *gin.Context, resp *http.Response) (*model.ErrorWithStatusCode, *model.Usage) {
+	scanner := bufio.NewScanner(resp.Body)
+	scanner.Split(func(data []byte, atEOF bool) (advance int, token []byte, err error) {
+		if atEOF && len(data) == 0 {
+			return 0, nil, nil
+		}
+		if i := strings.Index(string(data), "\n"); i >= 0 {
+			return i + 1, data[0:i], nil
+		}
+		if atEOF {
+			return len(data), data, nil
+		}
+		return 0, nil, nil
+	})
+
+	common.SetEventStreamHeaders(c)
+
+	var usage model.Usage
+
+	for scanner.Scan() {
+		data := scanner.Text()
+		if len(data) < 6 || !strings.HasPrefix(data, "data:") {
+			continue
+		}
+		innerData := strings.TrimPrefix(data, "data:")
+		innerData = strings.TrimSpace(innerData)
+
+		var claudeResponse StreamResponse
+		err := json.Unmarshal([]byte(innerData), &claudeResponse)
+		if err != nil {
+			logger.SysError("error unmarshalling stream response: " + err.Error())
+			continue
+		}
+
+		// Extract usage from message_start and message_delta events
+		if claudeResponse.Type == "message_start" && claudeResponse.Message != nil {
+			usage.PromptTokens += claudeResponse.Message.Usage.InputTokens
+			usage.CompletionTokens += claudeResponse.Message.Usage.OutputTokens
+		} else if claudeResponse.Type == "message_delta" && claudeResponse.Usage != nil {
+			usage.CompletionTokens += claudeResponse.Usage.OutputTokens
+		}
+
+		// Pass through the raw SSE data as-is
+		_, err = c.Writer.Write([]byte(data + "\n\n"))
+		if err != nil {
+			logger.SysError("error writing stream data: " + err.Error())
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		logger.SysError("error reading stream: " + err.Error())
+	}
+
+	err := resp.Body.Close()
+	if err != nil {
+		return openai.ErrorWrapper(err, "close_response_body_failed", http.StatusInternalServerError), nil
+	}
+
+	return nil, &usage
+}

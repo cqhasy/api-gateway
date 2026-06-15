@@ -21,6 +21,7 @@ func SetRelayRouter(router *gin.Engine) {
 	relayV1Router.Use(middleware.RelayPanicRecover(), middleware.TokenAuth(), middleware.Distribute())
 	{
 		relayV1Router.Any("/oneapi/proxy/:channelid/*target", controller.Relay)
+		relayV1Router.POST("/messages", controller.Relay)
 		relayV1Router.POST("/completions", controller.Relay)
 		relayV1Router.POST("/chat/completions", controller.Relay)
 		relayV1Router.POST("/edits", controller.Relay)
@@ -70,5 +71,10 @@ func SetRelayRouter(router *gin.Engine) {
 		relayV1Router.POST("/threads/:id/runs/:runsId/cancel", controller.RelayNotImplemented)
 		relayV1Router.GET("/threads/:id/runs/:runsId/steps/:stepId", controller.RelayNotImplemented)
 		relayV1Router.GET("/threads/:id/runs/:runsId/steps", controller.RelayNotImplemented)
+	}
+	anthropicRouter := router.Group("/anthropic/v1")
+	anthropicRouter.Use(middleware.RelayPanicRecover(), middleware.TokenAuth(), middleware.Distribute())
+	{
+		anthropicRouter.POST("/messages", controller.Relay)
 	}
 }
