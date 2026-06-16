@@ -1,0 +1,122 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+#
+# CodeRabbit configuration for one-api — Go-based OpenAI-compatible AI gateway.
+# https://docs.coderabbit.ai/reference/configuration
+
+language: en-US
+
+tone_instructions: >
+  Bilingual (zh/en) project. Understand Chinese issue templates and comments.
+  Use English for code feedback unless context is Chinese. Balance security and
+  correctness over style nitpicks.
+
+reviews:
+  # Omit profile to use the default ("chill"); tone_instructions above calibrate depth.
+  high_level_summary: true
+  review_status: true
+  poem: false
+
+  path_filters:
+    # Dependency lockfiles and vendored modules
+    - "!go.sum"
+    - "!vendor/**"
+    # Frontend build artifacts and dependencies
+    - "!**/node_modules/**"
+    - "!web/**/build/**"
+    - "!**/*.min.js"
+    - "!**/*.map"
+    # Common auto-generated Go outputs
+    - "!**/*.pb.go"
+    - "!**/*.pb.gw.go"
+    - "!**/*_gen.go"
+    - "!**/mock_*.go"
+    - "!**/mocks/**"
+
+  path_instructions:
+    - path: "relay/adaptor/**"
+      instructions: |
+        Provider integration layer for the AI gateway. Review with high scrutiny:
+
+        - Adaptor interface compliance: every provider must fully implement
+          `adaptor.Adaptor` (Init, GetRequestURL, SetupRequestHeader, ConvertRequest,
+          ConvertImageRequest, DoRequest, DoResponse, GetModelList, GetChannelName).
+          Verify compile-time checks like `var _ adaptor.Adaptor = new(Adaptor)` when present.
+        - Request/response mapping correctness for the target provider API.
+        - Consistent error handling: return `*model.ErrorWithStatusCode` with appropriate
+          HTTP status codes; avoid leaking provider internals or raw credentials in errors.
+        - API key, bearer token, and credential handling: never log secrets; read from
+          channel config/meta, not hard-coded values; validate before outbound requests.
+        - Streaming, token usage reporting, and model name mapping parity with existing adaptors.
+
+    - path: "relay/controller/**"
+      instructions: |
+        Relay request orchestration — quota and billing correctness are critical:
+
+        - Verify pre-consume and post-settle quota flows (`billing.PreConsumeQuota`,
+          `billing.ReturnPreConsumedQuota`, `billing.PostConsumeQuota`) on all code paths,
+          including errors, early returns, and streaming responses.
+        - Check model/group ratio application (`billing/ratio`) and token counting accuracy.
+        - Ensure relay modes (chat, completion, embedding, image, audio) follow established
+          patterns in sibling controllers.
+        - Adaptor selection and error propagation must remain consistent across controllers.
+        - Flag missing context cancellation, goroutine leaks in streaming handlers, and
+          unhandled upstream HTTP failures.
+
+    - path: "relay/billing/**"
+      instructions: |
+        Core billing and ratio logic for the gateway:
+
+        - Quota arithmetic must be exact; watch for integer overflow, negative balances,
+          and off-by-one token counts.
+        - Ratio lookups (model, group, image) must handle unknown models gracefully.
+        - Changes here affect every relay path — require strong justification and edge-case coverage.
+
+    - path: "controller/auth/**"
+      instructions: |
+        Authentication and OAuth integrations (GitHub, WeChat, OIDC, Lark, etc.):
+
+        - Validate session/token lifecycle, redirect URI handling, and state/nonce checks.
+        - Never expose client secrets, access tokens, or refresh tokens in logs or responses.
+        - Ensure failed auth paths do not leak whether a user exists (account enumeration).
+        - Review CSRF, open-redirect, and session fixation risks in OAuth callbacks.
+
+    - path: "controller/*.go"
+      instructions: |
+        HTTP-layer authentication, billing, and token management:
+
+        - API key and access-token validation must fail closed; check expired/disabled tokens.
+        - Quota reads/writes (`RemainQuota`, `UsedQuota`) must be atomic and race-safe.
+        - Admin-only endpoints require role checks; no privilege escalation via parameter tampering.
+        - Sensitive fields (keys, secrets) must not appear in API responses or debug logs.
+
+    - path: "**/*.go"
+      instructions: |
+        General Go review for this gateway codebase:
+
+        - Prefer explicit error handling; avoid silent `_` discards on errors that affect billing or auth.
+        - Use `context.Context` from the Gin request for outbound calls where applicable.
+        - Match existing patterns in `common/`, `model/`, and `middleware/` packages.
+        - Flag concurrency issues around shared caches (channel selection, rate limits, Redis).
+
+  auto_review:
+    enabled: true
+    auto_incremental_review: true
+    drafts: false
+
+  tools:
+    golangci-lint:
+      enabled: true
+    gitleaks:
+      enabled: true
+    shellcheck:
+      enabled: true
+    markdownlint:
+      enabled: true
+
+  knowledge_base:
+    code_guidelines:
+      enabled: true
+      filePatterns:
+        - "**/CLAUDE.md"
+        - "**/AGENTS.md"
+        - ".github/**/*.md"
