@@ -129,7 +129,7 @@ func ListAllModels(c *gin.Context) {
 	})
 }
 
-func ListModels(c *gin.Context) {
+func buildAvailableModelList(c *gin.Context) []OpenAIModels {
 	ctx := c.Request.Context()
 	var availableModels []string
 	if c.GetString(ctxkey.AvailableModels) != "" {
@@ -162,10 +162,53 @@ func ListModels(c *gin.Context) {
 			})
 		}
 	}
+	return availableOpenAIModels
+}
+
+func ListModels(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"object": "list",
-		"data":   availableOpenAIModels,
+		"data":   buildAvailableModelList(c),
 	})
+}
+
+// https://docs.anthropic.com/en/api/models-list
+type AnthropicModel struct {
+	ID          string `json:"id"`
+	Type        string `json:"type"`
+	DisplayName string `json:"display_name"`
+	CreatedAt   string `json:"created_at"`
+}
+
+type AnthropicModelListResponse struct {
+	Data    []AnthropicModel `json:"data"`
+	FirstID *string          `json:"first_id"`
+	LastID  *string          `json:"last_id"`
+	HasMore bool             `json:"has_more"`
+}
+
+func ListAnthropicModels(c *gin.Context) {
+	available := buildAvailableModelList(c)
+	data := make([]AnthropicModel, 0, len(available))
+	for _, m := range available {
+		data = append(data, AnthropicModel{
+			ID:          m.Id,
+			Type:        "model",
+			DisplayName: m.Id,
+			CreatedAt:   "2020-07-21T00:00:00Z",
+		})
+	}
+	resp := AnthropicModelListResponse{
+		Data:    data,
+		HasMore: false,
+	}
+	if len(data) > 0 {
+		firstID := data[0].ID
+		lastID := data[len(data)-1].ID
+		resp.FirstID = &firstID
+		resp.LastID = &lastID
+	}
+	c.JSON(http.StatusOK, resp)
 }
 
 func RetrieveModel(c *gin.Context) {
