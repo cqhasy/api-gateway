@@ -28,7 +28,6 @@ func GetAllChannels(c *gin.Context) {
 		"message": "",
 		"data":    channels,
 	})
-	return
 }
 
 func SearchChannels(c *gin.Context) {
@@ -46,7 +45,6 @@ func SearchChannels(c *gin.Context) {
 		"message": "",
 		"data":    channels,
 	})
-	return
 }
 
 func GetChannel(c *gin.Context) {

@@ -91,12 +91,11 @@ func GetUserById(id int, selectAll bool) (*User, error) {
 		return nil, errors.New("id 为空！")
 	}
 	user := User{Id: id}
-	var err error = nil
 	if selectAll {
-		err = DB.First(&user, "id = ?", id).Error
-	} else {
-		err = DB.Omit("password", "access_token").First(&user, "id = ?", id).Error
+		err := DB.First(&user, "id = ?", id).Error
+		return &user, err
 	}
+	err := DB.Omit("password", "access_token").First(&user, "id = ?", id).Error
 	return &user, err
 }
 

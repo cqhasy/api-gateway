@@ -216,6 +216,12 @@ func InitChannelCache() {
 	logger.SysLog("channels synced from database")
 }
 
+func refreshChannelCacheIfNeeded() {
+	if config.MemoryCacheEnabled {
+		InitChannelCache()
+	}
+}
+
 func SyncChannelCache(frequency int) {
 	for {
 		time.Sleep(time.Duration(frequency) * time.Second)

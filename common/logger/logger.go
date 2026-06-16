@@ -50,27 +50,27 @@ func SetupLogger() {
 }
 
 func SysLog(s string) {
-	logHelper(nil, loggerINFO, s)
+	logHelper(context.Background(), loggerINFO, s)
 }
 
 func SysLogf(format string, a ...any) {
-	logHelper(nil, loggerINFO, fmt.Sprintf(format, a...))
+	logHelper(context.Background(), loggerINFO, fmt.Sprintf(format, a...))
 }
 
 func SysWarn(s string) {
-	logHelper(nil, loggerWarn, s)
+	logHelper(context.Background(), loggerWarn, s)
 }
 
 func SysWarnf(format string, a ...any) {
-	logHelper(nil, loggerWarn, fmt.Sprintf(format, a...))
+	logHelper(context.Background(), loggerWarn, fmt.Sprintf(format, a...))
 }
 
 func SysError(s string) {
-	logHelper(nil, loggerError, s)
+	logHelper(context.Background(), loggerError, s)
 }
 
 func SysErrorf(format string, a ...any) {
-	logHelper(nil, loggerError, fmt.Sprintf(format, a...))
+	logHelper(context.Background(), loggerError, fmt.Sprintf(format, a...))
 }
 
 func Debug(ctx context.Context, msg string) {
@@ -112,11 +112,11 @@ func Errorf(ctx context.Context, format string, a ...any) {
 }
 
 func FatalLog(s string) {
-	logHelper(nil, loggerFatal, s)
+	logHelper(context.Background(), loggerFatal, s)
 }
 
 func FatalLogf(format string, a ...any) {
-	logHelper(nil, loggerFatal, fmt.Sprintf(format, a...))
+	logHelper(context.Background(), loggerFatal, fmt.Sprintf(format, a...))
 }
 
 func logHelper(ctx context.Context, level loggerLevel, msg string) {

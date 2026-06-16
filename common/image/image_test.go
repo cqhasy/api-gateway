@@ -51,6 +51,9 @@ func TestMain(m *testing.M) {
 }
 
 func TestDecode(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping network-dependent image tests in short mode")
+	}
 	// Bytes read: varies sometimes
 	// jpeg: 1063892
 	// png: 294462
@@ -96,6 +99,9 @@ func TestDecode(t *testing.T) {
 }
 
 func TestBase64(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping network-dependent image tests in short mode")
+	}
 	// Bytes read:
 	// jpeg: 1063892
 	// png: 294462
@@ -149,6 +155,9 @@ func TestBase64(t *testing.T) {
 }
 
 func TestGetImageSize(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping network-dependent image tests in short mode")
+	}
 	for i, c := range cases {
 		t.Run("Decode:"+strconv.Itoa(i), func(t *testing.T) {
 			width, height, err := img.GetImageSize(c.url)
@@ -160,6 +169,9 @@ func TestGetImageSize(t *testing.T) {
 }
 
 func TestGetImageSizeFromBase64(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping network-dependent image tests in short mode")
+	}
 	for i, c := range cases {
 		t.Run("Decode:"+strconv.Itoa(i), func(t *testing.T) {
 			resp, err := http.Get(c.url)

@@ -163,8 +163,6 @@ func chatStreamHandler(c *gin.Context, streamUrl string) (responseText string, e
 				}
 				if strings.HasPrefix(nextLine, dataPrefix) {
 					data = nextLine[len(dataPrefix):]
-				} else if strings.HasPrefix(nextLine, "id:") {
-					// id = strings.TrimSpace(nextLine[len("id:"):])
 				}
 			}
 

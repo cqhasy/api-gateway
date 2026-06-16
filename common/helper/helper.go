@@ -110,11 +110,11 @@ func GenRequestID() string {
 }
 
 func SetRequestID(ctx context.Context, id string) context.Context {
-	return context.WithValue(ctx, RequestIdKey, id)
+	return context.WithValue(ctx, requestIDContextKey, id)
 }
 
 func GetRequestID(ctx context.Context) string {
-	rawRequestId := ctx.Value(RequestIdKey)
+	rawRequestId := ctx.Value(requestIDContextKey)
 	if rawRequestId == nil {
 		return ""
 	}

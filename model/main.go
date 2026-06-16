@@ -11,7 +11,6 @@ import (
 	"github.com/songquanpeng/one-api/common/random"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"os"
 	"strings"
@@ -23,7 +22,6 @@ var LOG_DB *gorm.DB
 
 func CreateRootAccountIfNeed() error {
 	var user User
-	//if user.Status != util.UserStatusEnabled {
 	if err := DB.First(&user).Error; err != nil {
 		logger.SysLog("no user exists, creating a root user for you: username is root, password is 123456")
 		hashedPassword, err := common.Password2Hash("123456")
@@ -66,18 +64,14 @@ func CreateRootAccountIfNeed() error {
 
 func chooseDB(envName string) (*gorm.DB, error) {
 	dsn := os.Getenv(envName)
-
-	switch {
-	case strings.HasPrefix(dsn, "postgres://"):
-		// Use PostgreSQL
-		return openPostgreSQL(dsn)
-	case dsn != "":
-		// Use MySQL
-		return openMySQL(dsn)
-	default:
-		// Use SQLite
-		return openSQLite()
+	if dsn == "" {
+		return nil, fmt.Errorf("%s is required", envName)
 	}
+
+	if strings.HasPrefix(dsn, "postgres://") {
+		return openPostgreSQL(dsn)
+	}
+	return openMySQL(dsn)
 }
 
 func openPostgreSQL(dsn string) (*gorm.DB, error) {
@@ -95,15 +89,6 @@ func openMySQL(dsn string) (*gorm.DB, error) {
 	logger.SysLog("using MySQL as database")
 	common.UsingMySQL = true
 	return gorm.Open(mysql.Open(dsn), &gorm.Config{
-		PrepareStmt: true, // precompile SQL
-	})
-}
-
-func openSQLite() (*gorm.DB, error) {
-	logger.SysLog("SQL_DSN not set, using SQLite as database")
-	common.UsingSQLite = true
-	dsn := fmt.Sprintf("%s?_busy_timeout=%d", common.SQLitePath, common.SQLiteBusyTimeout)
-	return gorm.Open(sqlite.Open(dsn), &gorm.Config{
 		PrepareStmt: true, // precompile SQL
 	})
 }
@@ -155,9 +140,6 @@ func migrateDB() error {
 		return err
 	}
 	if err = DB.AutoMigrate(&Log{}); err != nil {
-		return err
-	}
-	if err = DB.AutoMigrate(&Channel{}); err != nil {
 		return err
 	}
 	return nil

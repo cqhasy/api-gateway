@@ -374,7 +374,7 @@ func Handler(c *gin.Context, resp *http.Response, promptTokens int, modelName st
 	}
 	c.Writer.Header().Set("Content-Type", "application/json")
 	c.Writer.WriteHeader(resp.StatusCode)
-	_, err = c.Writer.Write(jsonResponse)
+	_, _ = c.Writer.Write(jsonResponse)
 	return nil, &usage
 }
 
@@ -414,7 +414,7 @@ func PassthroughHandler(c *gin.Context, resp *http.Response) (*model.ErrorWithSt
 	// Write the raw Anthropic response back to the client
 	c.Writer.Header().Set("Content-Type", "application/json")
 	c.Writer.WriteHeader(resp.StatusCode)
-	_, err = c.Writer.Write(responseBody)
+	_, _ = c.Writer.Write(responseBody)
 	return nil, &usage
 }
 
@@ -462,7 +462,7 @@ func PassthroughStreamHandler(c *gin.Context, resp *http.Response) (*model.Error
 		}
 
 		// Pass through the raw SSE data as-is
-		_, err = c.Writer.Write([]byte(data + "\n\n"))
+		_, _ = c.Writer.Write([]byte(data + "\n\n"))
 		if err != nil {
 			logger.SysError("error writing stream data: " + err.Error())
 		}

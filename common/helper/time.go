@@ -16,5 +16,5 @@ func GetTimeString() string {
 
 // CalcElapsedTime return the elapsed time in milliseconds (ms)
 func CalcElapsedTime(start time.Time) int64 {
-	return time.Now().Sub(start).Milliseconds()
+	return time.Since(start).Milliseconds()
 }

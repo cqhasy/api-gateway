@@ -64,7 +64,7 @@ func ImageHandler(c *gin.Context, resp *http.Response) (*model.ErrorWithStatusCo
 	}
 	c.Writer.Header().Set("Content-Type", "application/json")
 	c.Writer.WriteHeader(resp.StatusCode)
-	_, err = c.Writer.Write(jsonResponse)
+	_, _ = c.Writer.Write(jsonResponse)
 	return nil, nil
 }
 
@@ -89,6 +89,10 @@ func asyncTask(taskID string, key string) (*TaskResponse, error, []byte) {
 	defer resp.Body.Close()
 
 	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		logger.SysError("aliAsyncTask ReadAll err: " + err.Error())
+		return &aliResponse, err, nil
+	}
 
 	var response TaskResponse
 	err = json.Unmarshal(responseBody, &response)

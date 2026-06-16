@@ -31,8 +31,7 @@ type Redemption struct {
 
 func GetAllRedemptions(startIdx int, num int) ([]*Redemption, error) {
 	var redemptions []*Redemption
-	var err error
-	err = DB.Order("id desc").Limit(num).Offset(startIdx).Find(&redemptions).Error
+	err := DB.Order("id desc").Limit(num).Offset(startIdx).Find(&redemptions).Error
 	return redemptions, err
 }
 
@@ -46,8 +45,7 @@ func GetRedemptionById(id int) (*Redemption, error) {
 		return nil, errors.New("id 为空！")
 	}
 	redemption := Redemption{Id: id}
-	var err error = nil
-	err = DB.First(&redemption, "id = ?", id).Error
+	err := DB.First(&redemption, "id = ?", id).Error
 	return &redemption, err
 }
 
@@ -90,9 +88,7 @@ func Redeem(ctx context.Context, key string, userId int) (quota int64, err error
 }
 
 func (redemption *Redemption) Insert() error {
-	var err error
-	err = DB.Create(redemption).Error
-	return err
+	return DB.Create(redemption).Error
 }
 
 func (redemption *Redemption) SelectUpdate() error {
@@ -102,15 +98,11 @@ func (redemption *Redemption) SelectUpdate() error {
 
 // Update Make sure your token's fields is completed, because this will update non-zero values
 func (redemption *Redemption) Update() error {
-	var err error
-	err = DB.Model(redemption).Select("name", "status", "quota", "redeemed_time").Updates(redemption).Error
-	return err
+	return DB.Model(redemption).Select("name", "status", "quota", "redeemed_time").Updates(redemption).Error
 }
 
 func (redemption *Redemption) Delete() error {
-	var err error
-	err = DB.Delete(redemption).Error
-	return err
+	return DB.Delete(redemption).Error
 }
 
 func DeleteRedemptionById(id int) (err error) {
