@@ -20,8 +20,8 @@ import './Dashboard.css';
 const chartConfig = {
   lineChart: {
     style: {
-      background: '#fff',
-      borderRadius: '8px',
+      background: 'var(--muxi-bg-elevated)',
+      borderRadius: 'var(--muxi-radius-sm)',
     },
     line: {
       strokeWidth: 2,
@@ -35,21 +35,13 @@ const chartConfig = {
     },
   },
   colors: {
-    requests: '#4318FF',
-    quota: '#00B5D8',
-    tokens: '#6C63FF',
+    requests: '#2563eb',
+    quota: '#7c3aed',
+    tokens: '#16a34a',
   },
   barColors: [
-    '#4318FF', // 深紫色
-    '#00B5D8', // 青色
-    '#6C63FF', // 紫色
-    '#05CD99', // 绿色
-    '#FFB547', // 橙色
-    '#FF5E7D', // 粉色
-    '#41B883', // 翠绿
-    '#7983FF', // 淡紫
-    '#FF8F6B', // 珊瑚色
-    '#49BEFF', // 天蓝
+    '#2563eb','#7c3aed','#16a34a','#d97706','#dc2626',
+    '#0891b2','#4f46e5','#059669','#ea580c','#db2777',
   ],
 };
 
@@ -224,7 +216,7 @@ const Dashboard = () => {
     tickLine: false,
     tick: {
       fontSize: 12,
-      fill: '#A3AED0',
+      fill: '#71717a',
       textAnchor: 'middle', // 文本居中对齐
     },
     tickFormatter: formatDate,
@@ -261,10 +253,10 @@ const Dashboard = () => {
                     <YAxis hide={true} />
                     <Tooltip
                       contentStyle={{
-                        background: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        background: '#18181b',
+                        border: '1px solid #27272a',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
                       }}
                       formatter={(value) => [
                         value,
@@ -317,10 +309,10 @@ const Dashboard = () => {
                     <YAxis hide={true} />
                     <Tooltip
                       contentStyle={{
-                        background: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        background: '#18181b',
+                        border: '1px solid #27272a',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
                       }}
                       formatter={(value) => [
                         value.toFixed(6),
@@ -371,10 +363,10 @@ const Dashboard = () => {
                     <YAxis hide={true} />
                     <Tooltip
                       contentStyle={{
-                        background: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        background: '#18181b',
+                        border: '1px solid #27272a',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
                       }}
                       formatter={(value) => [
                         value,
@@ -418,14 +410,14 @@ const Dashboard = () => {
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 12, fill: '#A3AED0' }}
+                  tick={{ fontSize: 12, fill: '#8F8D88' }}
                 />
                 <Tooltip
                   contentStyle={{
-                    background: '#fff',
-                    border: 'none',
-                    borderRadius: '4px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    background: 'var(--muxi-bg-elevated)',
+                    border: '1px solid var(--muxi-border)',
+                    borderRadius: 'var(--muxi-radius-sm)',
+                    boxShadow: 'var(--muxi-shadow-md)',
                   }}
                   labelFormatter={(label) =>
                     `${t('dashboard.statistics.tooltip.date')}: ${formatDate(

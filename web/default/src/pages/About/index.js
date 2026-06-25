@@ -32,42 +32,28 @@ const About = () => {
   }, []);
 
   return (
-    <>
+    <div className='muxi-animate-in'>
       {aboutLoaded && about === '' ? (
-        <div className='dashboard-container'>
-          <Card fluid className='chart-card'>
-            <Card.Content>
-              <Card.Header className='header'>{t('about.title')}</Card.Header>
-              <p>{t('about.description')}</p>
-              {t('about.repository')}
-              <a href='https://github.com/songquanpeng/one-api'>
-                https://github.com/songquanpeng/one-api
-              </a>
-            </Card.Content>
-          </Card>
-        </div>
+        <>
+          <h1 className='muxi-page-title'>{t('about.title')}</h1>
+          <p className='muxi-page-subtitle'>{t('about.description')}</p>
+          <p style={{ color: 'var(--text-secondary)' }}>
+            {t('about.repository')}
+            <a href='https://github.com/songquanpeng/one-api' style={{ color: 'var(--accent)' }}>
+              https://github.com/songquanpeng/one-api
+            </a>
+          </p>
+        </>
       ) : (
         <>
           {about.startsWith('https://') ? (
-            <iframe
-              src={about}
-              style={{ width: '100%', height: '100vh', border: 'none' }}
-            />
+            <iframe src={about} title='About' style={{ width: '100%', height: '100vh', border: 'none', borderRadius: 'var(--radius-lg)' }} />
           ) : (
-            <div className='dashboard-container'>
-              <Card fluid className='chart-card'>
-                <Card.Content>
-                  <div
-                    style={{ fontSize: 'larger' }}
-                    dangerouslySetInnerHTML={{ __html: about }}
-                  ></div>
-                </Card.Content>
-              </Card>
-            </div>
+            <div style={{ fontSize: 'larger', color: 'var(--text-primary)' }} dangerouslySetInnerHTML={{ __html: about }} />
           )}
         </>
       )}
-    </>
+    </div>
   );
 };
 

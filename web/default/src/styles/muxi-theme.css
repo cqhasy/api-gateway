@@ -1,0 +1,1317 @@
+/* ===================================================================
+   MUXI API — "Clear Horizon" Design System v2
+
+   Aesthetic: Light, airy SaaS console. Soft slate + crisp blue accent.
+   =================================================================== */
+
+/* ===================================================================
+   1. DESIGN TOKENS
+   =================================================================== */
+:root {
+  color-scheme: light;
+
+  /* Background layers */
+  --bg-root: #f1f5f9;
+  --bg-elevated: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8fafc;
+  --bg-input: #ffffff;
+  --bg-tooltip: #1e293b;
+  --bg-sidebar: #ffffff;
+
+  /* Borders */
+  --border-subtle: #e2e8f0;
+  --border-default: #cbd5e1;
+  --border-strong: #94a3b8;
+
+  /* Text */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-disabled: #cbd5e1;
+  --text-on-accent: #ffffff;
+
+  /* Accent — Clear blue */
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-soft: rgba(37,99,235,0.08);
+  --accent-glow: rgba(37,99,235,0.15);
+
+  /* Semantic */
+  --success: #16a34a;
+  --success-soft: rgba(22,163,74,0.08);
+  --warning: #d97706;
+  --warning-soft: rgba(217,119,6,0.08);
+  --danger: #dc2626;
+  --danger-soft: rgba(220,38,38,0.08);
+  --info: #2563eb;
+  --info-soft: rgba(37,99,235,0.08);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(15,23,42,0.05);
+  --shadow-md: 0 4px 12px rgba(15,23,42,0.07);
+  --shadow-lg: 0 12px 32px rgba(15,23,42,0.10);
+  --shadow-card-hover: 0 8px 24px rgba(15,23,42,0.08), 0 0 0 1px var(--border-subtle);
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Layout */
+  --sidebar-width: 240px;
+  --content-max: 1280px;
+  --header-height: 56px;
+
+  /* Typography */
+  --font-display: 'Syne', 'Manrope', 'DM Sans', sans-serif;
+  --font-body: 'IBM Plex Sans', 'DM Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+
+  /* Legacy aliases (--muxi-*) — remove in feat-17 */
+  --muxi-bg: var(--bg-root);
+  --muxi-bg-elevated: var(--bg-elevated);
+  --muxi-ink: var(--text-primary);
+  --muxi-charcoal: var(--bg-elevated);
+  --muxi-border: var(--border-subtle);
+  --muxi-border-strong: var(--border-default);
+  --muxi-text-secondary: var(--text-secondary);
+  --muxi-text-muted: var(--text-muted);
+  --muxi-font-mono: var(--font-mono);
+  --muxi-max-width: var(--content-max);
+  --muxi-radius-sm: var(--radius-sm);
+  --muxi-radius-md: var(--radius-md);
+  --muxi-radius-lg: var(--radius-lg);
+  --muxi-shadow-sm: var(--shadow-sm);
+  --muxi-shadow-md: var(--shadow-md);
+  --muxi-shadow-lg: var(--shadow-lg);
+  --muxi-transition: var(--duration-fast) var(--ease-out);
+  --muxi-gold: var(--accent);
+  --muxi-gold-soft: var(--accent-soft);
+  --muxi-gold-muted: var(--accent-soft);
+  --muxi-success: var(--success);
+}
+
+/* ===================================================================
+   2. BASE
+   =================================================================== */
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg-root);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body.muxi-app::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(37,99,235,0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 0%, rgba(14,165,233,0.05) 0%, transparent 50%),
+    var(--bg-root);
+}
+
+::selection { background: var(--accent-soft); color: var(--accent); }
+
+/* Skip link */
+.muxi-skip-link {
+  position: absolute; left: -9999px; top: 0; z-index: 999;
+  padding: 0.75rem 1rem; background: var(--accent); color: var(--text-on-accent);
+  text-decoration: none; border-radius: var(--radius-sm); font-weight: 600;
+}
+.muxi-skip-link:focus { left: 1rem; top: 1rem; }
+
+/* ===================================================================
+   3. APP SHELL
+   =================================================================== */
+.muxi-app-shell { display: flex; min-height: 100vh; }
+
+/* ===================================================================
+   4. SIDEBAR
+   =================================================================== */
+.muxi-sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: var(--sidebar-width);
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-subtle);
+  display: flex; flex-direction: column;
+  z-index: 100;
+  overflow-y: auto;
+  box-shadow: var(--shadow-sm);
+}
+.muxi-sidebar::after {
+  content: ''; position: absolute; top: 0; right: -1px;
+  width: 1px; height: 100%;
+  background: linear-gradient(180deg, var(--border-subtle), transparent 80%);
+}
+
+/* Brand */
+.muxi-sidebar-brand {
+  display: flex; align-items: center; gap: 0.625rem;
+  padding: 1.25rem 1.25rem 1.125rem;
+  text-decoration: none;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 0.5rem;
+}
+.muxi-sidebar-brand img { height: 30px; width: auto; border-radius: 6px; }
+.muxi-sidebar-brand span {
+  font-family: var(--font-display);
+  font-size: 1rem; font-weight: 700; letter-spacing: 0.02em;
+  color: var(--text-primary);
+}
+
+/* Nav */
+.muxi-sidebar-nav {
+  flex: 1;
+  padding: 0.375rem 0.625rem;
+  display: flex; flex-direction: column; gap: 1px;
+}
+.muxi-sidebar-item {
+  display: flex; align-items: center; gap: 0.625rem;
+  padding: 0.5625rem 0.75rem;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 0.875rem; font-weight: 500;
+  line-height: 1.25rem;
+  transition: background-color var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out);
+}
+.muxi-sidebar-item .icon {
+  width: 1.25rem; height: 1.25rem; min-width: 1.25rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  margin: 0 !important; padding: 0 !important;
+  font-size: 0.9375rem; line-height: 1;
+  opacity: 0.45;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+.muxi-sidebar-item > span {
+  line-height: 1.25rem;
+  display: flex; align-items: center;
+}
+.muxi-sidebar-item:hover { background: var(--bg-card); color: var(--text-primary); }
+.muxi-sidebar-item:hover .icon { opacity: 0.8; }
+.muxi-sidebar-item.active {
+  background: var(--accent-soft); color: var(--text-primary); font-weight: 600;
+}
+.muxi-sidebar-item.active .icon { opacity: 1; color: var(--accent); }
+
+/* Nav groups */
+.muxi-sidebar-group { margin-bottom: 0.75rem; }
+.muxi-sidebar-group-label {
+  padding: 0.375rem 0.75rem 0.25rem;
+  font-size: 0.6875rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+/* Mobile top bar */
+.muxi-mobile-bar {
+  display: none;
+  position: fixed; top: 0; left: 0; right: 0;
+  height: var(--header-height);
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-subtle);
+  align-items: center; gap: 0.75rem;
+  padding: 0 1rem; z-index: 101;
+}
+.muxi-mobile-menu-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.25rem; height: 2.25rem;
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-sm);
+  background: var(--bg-card); color: var(--text-primary);
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+.muxi-mobile-menu-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.muxi-mobile-menu-btn:hover { background: var(--bg-card-hover); }
+.muxi-mobile-brand {
+  display: flex; align-items: center; gap: 0.5rem;
+  text-decoration: none; color: var(--text-primary);
+  font-family: var(--font-display); font-weight: 700; font-size: 0.9375rem;
+}
+.muxi-mobile-brand img { border-radius: 6px; }
+.muxi-sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 99;
+  background: rgba(15,23,42,0.25); backdrop-filter: blur(2px);
+}
+.muxi-sidebar-brand--desktop { display: flex; }
+
+/* Spacer */
+.muxi-sidebar-spacer { flex: 1; }
+
+/* User */
+.muxi-sidebar-user {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--border-subtle);
+  display: flex; align-items: center; gap: 0.625rem;
+}
+.muxi-sidebar-user-avatar {
+  width: 32px; height: 32px; border-radius: var(--radius-sm);
+  background: var(--bg-card); color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600; font-size: 0.8125rem; flex-shrink: 0;
+}
+.muxi-sidebar-user-info { display: flex; flex-direction: column; min-width: 0; }
+.muxi-sidebar-user-name { font-size: 0.8125rem; font-weight: 600; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.muxi-sidebar-logout { font-size: 0.75rem; color: var(--text-muted); background: none; border: none; cursor: pointer; padding: 0; text-align: left; font-family: var(--font-body); }
+.muxi-sidebar-logout:hover { color: var(--danger); }
+.muxi-sidebar-login-btn {
+  display: block; width: 100%; text-align: center; text-decoration: none;
+  padding: 0.5rem; border-radius: var(--radius-sm);
+  background: var(--accent); color: var(--text-on-accent);
+  font-weight: 600; font-size: 0.875rem;
+  transition: background-color var(--duration-fast) var(--ease-out);
+  font-family: var(--font-body);
+}
+.muxi-sidebar-login-btn:hover { background: var(--accent-hover); }
+
+/* ===================================================================
+   5. MAIN CONTENT
+   =================================================================== */
+.muxi-main {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  min-height: 100vh;
+  padding: 2.5rem 2rem;
+  max-width: var(--content-max);
+}
+
+/* ===================================================================
+   6. TYPOGRAPHY
+   =================================================================== */
+.muxi-page-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem; font-weight: 700;
+  letter-spacing: -0.03em; line-height: 1.15;
+  color: var(--text-primary);
+  margin: 0 0 0.25rem;
+}
+.muxi-page-subtitle {
+  font-size: 0.9375rem; color: var(--text-muted);
+  margin: 0 0 2rem;
+}
+.muxi-section-label {
+  font-family: var(--font-display);
+  font-size: 0.6875rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-muted); margin-bottom: 0.75rem;
+}
+.muxi-tabular-nums { font-variant-numeric: tabular-nums; }
+.muxi-text-mono { font-family: var(--font-mono); }
+
+/* ===================================================================
+   7. STAT BAR
+   =================================================================== */
+.muxi-stat-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0; margin-bottom: 2rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.muxi-stat-bar-item {
+  padding: 1.25rem 1.5rem;
+  display: flex; flex-direction: column; gap: 0.25rem;
+  border-right: 1px solid var(--border-subtle);
+  transition: background 200ms var(--ease-out);
+}
+.muxi-stat-bar-item:last-child { border-right: none; }
+.muxi-stat-bar-item:hover { background: var(--bg-card-hover); }
+.muxi-stat-bar-label {
+  font-size: 0.75rem; font-weight: 500;
+  color: var(--text-muted); letter-spacing: 0.02em;
+}
+.muxi-stat-bar-value {
+  font-family: var(--font-display);
+  font-size: 1.5rem; font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+.muxi-stat-bar-value.success { color: var(--success); }
+.muxi-stat-bar-value.warning { color: var(--warning); }
+.muxi-stat-bar-value.danger { color: var(--danger); }
+
+@media screen and (max-width: 768px) {
+  .muxi-stat-bar { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ===================================================================
+   8. SEARCH
+   =================================================================== */
+.muxi-search {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+.muxi-search input {
+  width: 100%;
+  height: 44px;
+  padding: 0 1rem 0 2.75rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  transition: all 200ms var(--ease-out);
+  box-sizing: border-box;
+}
+.muxi-search input::placeholder { color: var(--text-muted); }
+.muxi-search input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.muxi-search-icon {
+  position: absolute; left: 0.875rem; top: 50%; transform: translateY(-50%);
+  color: var(--text-muted); font-size: 0.9375rem;
+  pointer-events: none;
+}
+.muxi-search-hint {
+  position: absolute; right: 0.875rem; top: 50%; transform: translateY(-50%);
+  font-size: 0.75rem; color: var(--text-disabled);
+  background: var(--bg-card); padding: 0.15rem 0.4rem;
+  border-radius: 4px; border: 1px solid var(--border-subtle);
+  pointer-events: none;
+}
+
+/* ===================================================================
+   9. CHANNEL CARDS GRID
+   =================================================================== */
+.muxi-channel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 0.875rem;
+}
+
+/* ===================================================================
+   10. CHANNEL CARD
+   =================================================================== */
+.muxi-channel-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 250ms var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+.muxi-channel-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(59,130,246,0.04), transparent 40%);
+  opacity: 0; transition: opacity 300ms;
+  pointer-events: none;
+}
+.muxi-channel-card:hover {
+  border-color: var(--border-default);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+}
+.muxi-channel-card:hover::before { opacity: 1; }
+
+/* Card header */
+.muxi-channel-card-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.muxi-channel-card-provider {
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.muxi-channel-card-logo {
+  width: 28px; height: 28px;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8125rem; font-weight: 700;
+  flex-shrink: 0;
+}
+.muxi-channel-card-name {
+  font-family: var(--font-display);
+  font-size: 0.9375rem; font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+.muxi-channel-card-type {
+  font-size: 0.75rem; color: var(--text-muted);
+  margin-top: 1px;
+}
+
+/* Status dot */
+.muxi-status-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.muxi-status-dot.online {
+  background: var(--success);
+  box-shadow: 0 0 8px rgba(34,197,94,0.3);
+  animation: muxi-pulse-online 2s ease-in-out infinite;
+}
+.muxi-status-dot.offline { background: var(--danger); }
+.muxi-status-dot.disabled { background: var(--text-disabled); }
+
+@keyframes muxi-pulse-online {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+/* Card metrics */
+.muxi-channel-card-metrics {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.muxi-channel-metric {
+  display: flex; flex-direction: column; gap: 0.125rem;
+}
+.muxi-channel-metric-label {
+  font-size: 0.6875rem; font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.muxi-channel-metric-value {
+  font-size: 0.875rem; font-weight: 600; color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+.muxi-channel-metric-value.fast { color: var(--success); }
+.muxi-channel-metric-value.slow { color: var(--warning); }
+.muxi-channel-metric-value.timeout { color: var(--danger); }
+
+/* Card actions */
+.muxi-channel-card-actions {
+  display: flex; gap: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-subtle);
+}
+.muxi-channel-card-actions .ui.button {
+  flex: 1;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  padding: 0.4rem 0.75rem !important;
+  border-radius: var(--radius-sm) !important;
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+  border: 1px solid var(--border-subtle) !important;
+  transition: all 150ms var(--ease-out) !important;
+  margin: 0 !important;
+}
+.muxi-channel-card-actions .ui.button:hover {
+  background: var(--bg-card-hover) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-default) !important;
+}
+.muxi-channel-card-actions .ui.button.primary {
+  background: var(--accent) !important;
+  color: #fff !important;
+  border-color: var(--accent) !important;
+}
+.muxi-channel-card-actions .ui.button.primary:hover {
+  background: var(--accent-hover) !important;
+}
+
+/* ===================================================================
+   11. DRAWER (Slide-out panel)
+   =================================================================== */
+.muxi-drawer-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: muxi-fade-in 200ms var(--ease-out);
+}
+.muxi-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 201;
+  width: 480px; max-width: 100vw;
+  background: var(--bg-elevated);
+  border-left: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column;
+  animation: muxi-slide-in-right 300ms var(--ease-out);
+  overflow-y: auto;
+}
+.muxi-drawer-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.muxi-drawer-title {
+  font-family: var(--font-display);
+  font-size: 1.125rem; font-weight: 700; color: var(--text-primary);
+}
+.muxi-drawer-close {
+  width: 32px; height: 32px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle); background: transparent;
+  color: var(--text-muted); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; transition: all 150ms var(--ease-out);
+}
+.muxi-drawer-close:hover { background: var(--bg-card); color: var(--text-primary); border-color: var(--border-default); }
+
+.muxi-drawer-body { padding: 1.5rem; flex: 1; }
+.muxi-drawer-section { margin-bottom: 1.5rem; }
+.muxi-drawer-section-label {
+  font-size: 0.6875rem; font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.07em;
+  margin-bottom: 0.5rem;
+}
+.muxi-drawer-field {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.9375rem;
+}
+.muxi-drawer-field:last-child { border-bottom: none; }
+.muxi-drawer-field-label { color: var(--text-secondary); }
+.muxi-drawer-field-value { color: var(--text-primary); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+.muxi-drawer-models {
+  display: flex; flex-wrap: wrap; gap: 0.375rem;
+}
+.muxi-drawer-model-tag {
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.75rem; color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+.muxi-drawer-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border-subtle);
+  display: flex; gap: 0.5rem;
+}
+
+@keyframes muxi-slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+@keyframes muxi-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ===================================================================
+   12. CARDS (Generic, for other pages)
+   =================================================================== */
+.ui.card.muxi-card,
+.ui.cards > .card.muxi-card,
+.chart-card {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: none !important;
+  transition: border-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out) !important;
+}
+.ui.card.muxi-card:hover,
+.chart-card:hover {
+  border-color: var(--border-default) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+.ui.card.muxi-card > .content,
+.chart-card > .content { background: transparent !important; }
+.ui.card.muxi-card > .content > .header,
+.chart-card > .content > .header {
+  color: var(--text-primary) !important;
+  font-family: var(--font-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em;
+}
+.ui.card.muxi-card > .content .description { color: var(--text-secondary) !important; }
+
+/* ===================================================================
+   13. BUTTONS
+   =================================================================== */
+.muxi-btn-primary.ui.button {
+  background: var(--text-primary) !important; color: var(--bg-root) !important;
+  font-weight: 600 !important; letter-spacing: 0.02em;
+  border-radius: var(--radius-sm) !important; border: none !important;
+  padding: 0.625rem 1.25rem !important;
+  transition: all 200ms var(--ease-out) !important;
+  font-family: var(--font-body) !important;
+}
+.muxi-btn-primary.ui.button:hover { opacity: 0.85; transform: translateY(-1px); }
+.muxi-btn-primary.ui.button:active { transform: scale(0.97); }
+
+.muxi-btn-accent.ui.button {
+  background: var(--accent) !important; color: #fff !important;
+  font-weight: 600 !important; letter-spacing: 0.02em;
+  border-radius: var(--radius-sm) !important; border: none !important;
+  padding: 0.625rem 1.25rem !important;
+  transition: all 200ms var(--ease-out) !important;
+  font-family: var(--font-body) !important;
+}
+.muxi-btn-accent.ui.button:hover { background: var(--accent-hover) !important; transform: translateY(-1px); }
+.muxi-btn-accent.ui.button:active { transform: scale(0.97); }
+
+.muxi-btn-ghost.ui.button {
+  background: transparent !important; color: var(--text-secondary) !important;
+  font-weight: 500 !important;
+  border-radius: var(--radius-sm) !important; padding: 0.625rem 1.25rem !important;
+  box-shadow: inset 0 0 0 1px var(--border-subtle) !important;
+  transition: all 200ms var(--ease-out) !important;
+  font-family: var(--font-body) !important;
+}
+.muxi-btn-ghost.ui.button:hover {
+  color: var(--text-primary) !important; border-color: var(--border-default) !important;
+  box-shadow: inset 0 0 0 1px var(--border-default) !important;
+}
+
+/* ===================================================================
+   14. FORMS
+   =================================================================== */
+.ui.form input:not([type]),
+.ui.form input[type="text"],
+.ui.form input[type="password"],
+.ui.form input[type="email"],
+.ui.form input[type="number"],
+.ui.form input[type="search"],
+.ui.form textarea,
+.ui.input > input {
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-body) !important; font-size: 0.9375rem !important;
+  padding: 0.625rem 0.875rem !important;
+  transition: border-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out) !important;
+}
+.ui.form input:focus,
+.ui.form textarea:focus,
+.ui.input > input:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-soft) !important;
+  outline: none !important;
+}
+.ui.form input::placeholder,
+.ui.form textarea::placeholder,
+.ui.input > input::placeholder { color: var(--text-muted) !important; }
+
+.ui.form .field + .field { margin-top: 1.25rem; }
+.ui.form .field > label { font-size: 0.9375rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 0.35rem; display: block; }
+
+/* Dropdown */
+.ui.selection.dropdown {
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-body) !important; font-size: 0.9375rem !important;
+  padding: 0.625rem 0.875rem !important; min-height: unset !important;
+}
+.ui.selection.dropdown .menu {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+.ui.selection.dropdown .menu .item {
+  color: var(--text-secondary) !important;
+  border-top: none !important;
+}
+.ui.selection.dropdown .menu .item:hover,
+.ui.selection.dropdown .menu .item.active {
+  background: var(--accent-soft) !important;
+  color: var(--text-primary) !important;
+}
+.ui.selection.dropdown > .text { color: var(--text-primary) !important; }
+.ui.selection.dropdown > .dropdown.icon { color: var(--text-muted) !important; }
+
+/* Checkbox */
+.ui.checkbox .box:before,
+.ui.checkbox label:before {
+  background: var(--bg-input) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: 4px !important;
+}
+.ui.checkbox input:checked ~ .box:before,
+.ui.checkbox input:checked ~ label:before {
+  background: var(--accent) !important; border-color: var(--accent) !important;
+}
+.ui.toggle.checkbox input:checked ~ .box:before,
+.ui.toggle.checkbox input:checked ~ label:before {
+  background: var(--accent) !important;
+}
+
+/* ===================================================================
+   15. TABLES
+   =================================================================== */
+.ui.table {
+  background: transparent !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-md) !important; overflow: hidden;
+  font-family: var(--font-body) !important; margin-top: 0 !important;
+  color: var(--text-primary) !important;
+}
+.ui.table thead th {
+  background: var(--bg-card) !important;
+  color: var(--text-muted) !important;
+  font-weight: 600 !important; font-size: 0.6875rem !important;
+  text-transform: uppercase; letter-spacing: 0.07em;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  padding: 0.7rem 1rem !important;
+}
+.ui.table tbody tr { transition: background 150ms var(--ease-out); }
+.ui.table tbody tr:nth-child(even) { background: rgba(255,255,255,0.012); }
+.ui.table tbody tr:hover { background: var(--accent-soft) !important; }
+.ui.table tbody td {
+  border-bottom: 1px solid var(--border-subtle) !important;
+  color: var(--text-primary) !important; font-size: 0.9375rem;
+  padding: 0.625rem 1rem !important;
+}
+
+/* ===================================================================
+   16. PAGINATION
+   =================================================================== */
+.ui.pagination.menu {
+  background: transparent !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-sm) !important; box-shadow: none !important;
+}
+.ui.pagination.menu .item {
+  color: var(--text-secondary) !important; font-family: var(--font-body) !important;
+  font-size: 0.875rem; border-radius: 6px !important;
+  min-width: 34px; height: 34px; padding: 0 0.5rem;
+  transition: all 150ms var(--ease-out) !important;
+  background: transparent !important;
+  border-top: none !important;
+}
+.ui.pagination.menu .item:hover { background: var(--bg-card) !important; color: var(--text-primary) !important; }
+.ui.pagination.menu .item.active { background: var(--accent) !important; color: var(--text-on-accent) !important; font-weight: 600 !important; }
+
+/* ===================================================================
+   17. LABELS & BADGES
+   =================================================================== */
+.ui.label {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-sm) !important;
+  font-family: var(--font-body) !important; font-weight: 500 !important;
+  color: var(--text-primary) !important;
+}
+.ui.basic.label { background: transparent !important; }
+.ui.basic.green.label { color: var(--success) !important; border-color: rgba(34,197,94,0.3) !important; background: var(--success-soft) !important; }
+.ui.basic.red.label { color: var(--danger) !important; border-color: rgba(239,68,68,0.3) !important; background: var(--danger-soft) !important; }
+.ui.basic.yellow.label { color: var(--warning) !important; border-color: rgba(245,158,11,0.3) !important; background: var(--warning-soft) !important; }
+.ui.basic.orange.label { color: var(--warning) !important; border-color: rgba(245,158,11,0.3) !important; background: var(--warning-soft) !important; }
+.ui.basic.grey.label { color: var(--text-muted) !important; border-color: var(--border-subtle) !important; }
+.ui.basic.blue.label { color: var(--accent) !important; border-color: rgba(59,130,246,0.3) !important; background: var(--accent-soft) !important; }
+
+/* ===================================================================
+   18. AUTH PAGES
+   =================================================================== */
+.muxi-auth-page {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center; padding: 2rem;
+  background: var(--bg-root);
+}
+.muxi-auth-shell {
+  display: grid; grid-template-columns: 1fr 1fr;
+  max-width: 920px; width: 100%; min-height: 520px;
+  border-radius: var(--radius-xl); overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-lg);
+}
+.muxi-auth-brand {
+  background: linear-gradient(155deg, #eff6ff 0%, #dbeafe 45%, #f8fafc 100%);
+  padding: 3rem 2.5rem; display: flex; flex-direction: column;
+  justify-content: space-between; position: relative; overflow: hidden;
+}
+.muxi-auth-brand::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 30% 70%, rgba(37,99,235,0.12) 0%, transparent 50%),
+    radial-gradient(circle at 70% 20%, rgba(14,165,233,0.08) 0%, transparent 40%);
+  pointer-events: none;
+}
+.muxi-auth-brand-logo { height: 40px; width: auto; position: relative; z-index: 1; }
+.muxi-auth-brand h1 {
+  position: relative; z-index: 1; color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 1.625rem; font-weight: 700; letter-spacing: 0.02em;
+  margin: 1.5rem 0 0.75rem; line-height: 1.2;
+}
+.muxi-auth-brand p { position: relative; z-index: 1; color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.6; max-width: 28ch; margin: 0; }
+.auth-brand-footer { position: relative; z-index: 1; color: var(--text-muted); font-size: 0.8125rem; letter-spacing: 0.04em; }
+
+.muxi-auth-form { background: var(--bg-elevated); padding: 2.5rem 2.5rem; }
+.muxi-auth-field-stack { display: flex; flex-direction: column; gap: 0.75rem; }
+.muxi-auth-submit { margin-top: 0.5rem; }
+.muxi-auth-footer { margin-top: 1.25rem; font-size: 0.875rem; color: var(--text-secondary); }
+.muxi-auth-footer--center { text-align: center; }
+.muxi-auth-divider {
+  display: flex; align-items: center; gap: 0.75rem;
+  margin: 1.25rem 0; color: var(--text-muted); font-size: 0.8125rem;
+}
+.muxi-auth-divider::before, .muxi-auth-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border-subtle);
+}
+.muxi-auth-oauth { display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap; }
+.muxi-auth-oauth-btn {
+  width: 2.5rem; height: 2.5rem; border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle); background: var(--bg-elevated);
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-primary);
+  transition: border-color var(--duration-fast) var(--ease-out),
+              background-color var(--duration-fast) var(--ease-out);
+}
+.muxi-auth-oauth-btn:hover { border-color: var(--border-default); background: var(--bg-card-hover); }
+.muxi-auth-oauth-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.muxi-auth-oauth-btn img { width: 1.375rem; height: 1.375rem; }
+.muxi-auth-oauth-btn--github { background: #24292f; color: #fff; border-color: #24292f; }
+.muxi-auth-oauth-btn--github:hover { background: #1b1f23; }
+.muxi-auth-oauth-btn--wechat { background: #07c160; color: #fff; border-color: #07c160; }
+.muxi-input-with-action { display: flex; gap: 0.5rem; align-items: flex-end; }
+.muxi-input-with-action .muxi-field { flex: 1; min-width: 0; }
+.muxi-auth-turnstile { display: flex; justify-content: center; margin-top: 0.25rem; }
+.muxi-auth-notice {
+  margin-top: 1rem; padding: 0.75rem 1rem; border-radius: var(--radius-sm);
+  background: var(--info-soft); border: 1px solid rgba(37,99,235,0.15);
+  color: var(--text-secondary); font-size: 0.875rem; line-height: 1.5;
+}
+.muxi-auth-password-display {
+  cursor: pointer; font-family: var(--font-mono); letter-spacing: 0.04em;
+}
+.muxi-btn--block { width: 100%; }
+.muxi-wechat-modal { padding: 1rem !important; }
+.muxi-wechat-modal img { border-radius: var(--radius-md); margin-bottom: 0.75rem; }
+.muxi-wechat-modal-tip { text-align: center; color: var(--text-secondary); font-size: 0.875rem; margin: 0 0 1rem; }
+.muxi-auth-form-heading { font-family: var(--font-display); font-size: 1.375rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text-primary); margin: 0 0 0.35rem; }
+.muxi-auth-form-subtitle { margin: 0 0 1.75rem; color: var(--text-muted); font-size: 0.9375rem; }
+.muxi-auth-link { color: var(--accent); font-weight: 600; margin-left: 4px; text-decoration: none; transition: color 150ms; }
+.muxi-auth-link:hover { color: var(--accent-hover); }
+.muxi-auth-links-row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; font-size: 0.875rem; color: var(--text-secondary); }
+.muxi-auth-form .ui.button[type="submit"] { margin-top: 1.25rem; height: 46px; font-size: 1rem; }
+
+/* ===================================================================
+   19. HOME PAGE
+   =================================================================== */
+.muxi-home-hero {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 2rem;
+}
+.muxi-home-hero-text {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.muxi-home-hero-text h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 700;
+  letter-spacing: -0.03em; line-height: 1.15; color: var(--text-primary);
+  margin: 0 0 0.75rem;
+}
+.muxi-home-hero-text p { color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.6; margin: 0 0 1.5rem; max-width: 36ch; }
+.muxi-home-hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.muxi-home-hero-hint { margin-top: 1rem; font-size: 0.8125rem; color: var(--text-muted); }
+.muxi-home-hero-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+.muxi-stat-item {
+  padding: 1.125rem 1.25rem; border-radius: var(--radius-md);
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  transition: border-color 200ms var(--ease-out);
+}
+.muxi-stat-item:hover { border-color: var(--border-default); }
+.muxi-stat-item label { display: block; font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 0.35rem; }
+.muxi-stat-item span { font-size: 0.9375rem; font-weight: 500; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+
+.muxi-accent-bar { height: 3px; width: 40px; background: var(--accent); border-radius: 2px; margin-bottom: 1.25rem; }
+.muxi-grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.75rem; }
+.muxi-section { margin-bottom: 2rem; }
+.muxi-section-title { font-family: var(--font-display); font-size: 0.9375rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.75rem; letter-spacing: -0.01em; }
+
+/* ===================================================================
+   20. SEMANTIC UI OVERRIDES
+   =================================================================== */
+/* Buttons */
+.ui.primary.button, .ui.blue.button {
+  background: var(--accent) !important; color: var(--text-on-accent) !important;
+  font-weight: 600 !important; border-radius: var(--radius-sm) !important; border: none !important;
+}
+.ui.primary.button:hover, .ui.blue.button:hover { background: var(--accent-hover) !important; }
+.ui.positive.button, .ui.green.button { background: var(--success) !important; color: #fff !important; border-radius: var(--radius-sm) !important; font-weight: 600 !important; }
+.ui.negative.button, .ui.red.button { background: var(--danger) !important; color: #fff !important; border-radius: var(--radius-sm) !important; font-weight: 600 !important; }
+
+/* Message */
+.ui.message {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-md) !important; box-shadow: none !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-body) !important;
+}
+.ui.info.message { border-color: rgba(59,130,246,0.2) !important; background: var(--accent-soft) !important; }
+.ui.positive.message { border-color: rgba(34,197,94,0.2) !important; background: var(--success-soft) !important; }
+.ui.negative.message { border-color: rgba(239,68,68,0.2) !important; background: var(--danger-soft) !important; }
+.ui.warning.message { border-color: rgba(245,158,11,0.2) !important; background: var(--warning-soft) !important; }
+
+/* Divider */
+.ui.divider { border-top-color: var(--border-subtle) !important; }
+
+/* Modal */
+.ui.modal { background: var(--bg-elevated) !important; border: 1px solid var(--border-subtle) !important; border-radius: var(--radius-xl) !important; box-shadow: var(--shadow-lg) !important; }
+.ui.modal > .header { background: transparent !important; border-bottom: 1px solid var(--border-subtle) !important; color: var(--text-primary) !important; font-family: var(--font-display) !important; }
+.ui.modal > .content { background: transparent !important; color: var(--text-primary) !important; }
+.ui.dimmer { background: rgba(0,0,0,0.6) !important; backdrop-filter: blur(4px) !important; }
+
+/* Segment */
+.ui.segment { background: var(--bg-card) !important; border: 1px solid var(--border-subtle) !important; border-radius: var(--radius-md) !important; box-shadow: none !important; }
+.ui.segment.muxi-panel { border-radius: var(--radius-lg) !important; }
+
+/* Popup */
+.ui.popup { background: var(--bg-tooltip) !important; border: 1px solid var(--border-default) !important; border-radius: var(--radius-sm) !important; box-shadow: var(--shadow-md) !important; color: var(--text-primary) !important; }
+
+/* Tab */
+.ui.tabular.menu { border-bottom-color: var(--border-subtle) !important; }
+.ui.tabular.menu .item { color: var(--text-secondary) !important; }
+.ui.tabular.menu .active.item { color: var(--text-primary) !important; border-color: var(--border-subtle) !important; background: var(--bg-card) !important; }
+
+/* ===================================================================
+   21. DASHBOARD
+   =================================================================== */
+.dashboard-container { padding: 0; background: transparent; max-width: 100%; }
+.charts-grid { margin-bottom: 1rem !important; }
+.charts-grid .column { padding: 0.5rem !important; }
+.chart-container { margin-top: 2px; padding: 16px; border-radius: var(--radius-md); background: transparent; }
+
+/* ===================================================================
+   22. SETTINGS TABS
+   =================================================================== */
+.settings-tab { margin-top: 1rem !important; border-bottom: 1px solid var(--border-subtle) !important; }
+.settings-tab .item { color: var(--text-muted) !important; font-weight: 500 !important; padding: 0.75rem 1.1rem !important; border-radius: 8px 8px 0 0 !important; }
+.settings-tab .active.item { color: var(--text-primary) !important; font-weight: 600 !important; border-color: var(--accent) !important; }
+.ui.tab.segment { border: none !important; box-shadow: none !important; padding: 1.25rem 0 !important; background: transparent !important; }
+
+/* ===================================================================
+   23. TOAST
+   =================================================================== */
+.muxi-toast { border-radius: var(--radius-md) !important; font-family: var(--font-body) !important; font-size: 0.9375rem !important; box-shadow: var(--shadow-lg) !important; background: var(--bg-elevated) !important; color: var(--text-primary) !important; border: 1px solid var(--border-subtle) !important; }
+.muxi-toast-progress { background: var(--accent) !important; }
+.Toastify__toast--success .muxi-toast-progress { background: var(--success) !important; }
+.Toastify__toast--error .muxi-toast-progress { background: var(--danger) !important; }
+
+/* ===================================================================
+   24. FOOTER
+   =================================================================== */
+.muxi-footer { border-top: 1px solid var(--border-subtle); padding: 1.25rem 0 0; margin-top: 2rem; color: var(--text-muted); font-size: 0.875rem; }
+.muxi-footer a { color: var(--text-secondary); text-decoration: none; }
+.muxi-footer a:hover { color: var(--text-primary); }
+.custom-footer { font-size: 0.875rem; line-height: 1.6; color: var(--text-muted); }
+
+/* ===================================================================
+   25. ANIMATION
+   =================================================================== */
+@keyframes muxi-card-enter {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.muxi-animate-in > * {
+  animation: muxi-card-enter 400ms var(--ease-out) both;
+}
+.muxi-animate-in > *:nth-child(1) { animation-delay: 0ms; }
+.muxi-animate-in > *:nth-child(2) { animation-delay: 60ms; }
+.muxi-animate-in > *:nth-child(3) { animation-delay: 120ms; }
+.muxi-animate-in > *:nth-child(4) { animation-delay: 180ms; }
+.muxi-animate-in > *:nth-child(5) { animation-delay: 240ms; }
+.muxi-animate-in > *:nth-child(n+6) { animation-delay: 300ms; }
+
+/* Skeleton */
+@keyframes muxi-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.muxi-skeleton {
+  background: linear-gradient(90deg, var(--bg-card) 0%, var(--bg-card-hover) 50%, var(--bg-card) 100%);
+  background-size: 200% 100%;
+  animation: muxi-shimmer 1.8s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* ===================================================================
+   26. RESPONSIVE
+   =================================================================== */
+@media screen and (max-width: 768px) {
+  .muxi-mobile-bar { display: flex; }
+  .muxi-sidebar-overlay { display: block; }
+  .muxi-sidebar {
+    transform: translateX(-100%);
+    transition: transform var(--duration-normal) var(--ease-out);
+    top: var(--header-height);
+  }
+  .muxi-sidebar--open { transform: translateX(0); }
+  .muxi-sidebar-brand--desktop { display: none; }
+  .muxi-main {
+    margin-left: 0;
+    padding: calc(var(--header-height) + 1.25rem) 1rem 1.25rem;
+  }
+  .muxi-auth-shell { grid-template-columns: 1fr; min-height: auto; }
+  .muxi-auth-brand { padding: 2rem 1.5rem; }
+  .muxi-auth-form { padding: 2rem 1.5rem; }
+  .muxi-home-hero { grid-template-columns: 1fr; }
+  .muxi-home-hero-stats { grid-template-columns: 1fr 1fr; }
+  .muxi-channel-grid { grid-template-columns: 1fr; }
+  .muxi-drawer { width: 100vw; }
+}
+@media screen and (max-width: 480px) {
+  .muxi-home-hero-stats { grid-template-columns: 1fr; }
+}
+
+/* ===================================================================
+   27. REDUCED MOTION
+   =================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}
+
+/* ===================================================================
+   28. MUXI COMPONENT LIBRARY
+   =================================================================== */
+
+/* Button */
+.muxi-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  padding: 0.5625rem 1rem; border-radius: var(--radius-sm);
+  font-family: var(--font-body); font-size: 0.875rem; font-weight: 600;
+  line-height: 1.25; cursor: pointer; border: 1px solid transparent;
+  transition: background-color var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out),
+              opacity var(--duration-fast) var(--ease-out);
+  touch-action: manipulation;
+}
+.muxi-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.muxi-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.muxi-btn--primary { background: var(--accent); color: var(--text-on-accent); }
+.muxi-btn--primary:hover:not(:disabled) { background: var(--accent-hover); }
+.muxi-btn--secondary { background: var(--bg-card); color: var(--text-primary); border-color: var(--border-subtle); }
+.muxi-btn--secondary:hover:not(:disabled) { background: var(--bg-card-hover); border-color: var(--border-default); }
+.muxi-btn--ghost { background: transparent; color: var(--text-secondary); }
+.muxi-btn--ghost:hover:not(:disabled) { background: var(--bg-card); color: var(--text-primary); }
+.muxi-btn--danger { background: var(--danger); color: #fff; }
+.muxi-btn--danger:hover:not(:disabled) { opacity: 0.9; }
+.muxi-btn--accent { background: var(--accent); color: var(--text-on-accent); }
+.muxi-btn--accent:hover:not(:disabled) { background: var(--accent-hover); }
+.muxi-btn--sm { padding: 0.375rem 0.75rem; font-size: 0.8125rem; }
+.muxi-btn--lg { padding: 0.6875rem 1.25rem; font-size: 1rem; }
+.muxi-btn--loading { position: relative; color: transparent !important; pointer-events: none; }
+.muxi-btn--loading::after {
+  content: ''; position: absolute; width: 1rem; height: 1rem;
+  border: 2px solid currentColor; border-right-color: transparent;
+  border-radius: 50%; animation: muxi-spin 600ms linear infinite;
+  color: var(--bg-root);
+}
+.muxi-btn--secondary.muxi-btn--loading::after,
+.muxi-btn--ghost.muxi-btn--loading::after { color: var(--text-primary); }
+@keyframes muxi-spin { to { transform: rotate(360deg); } }
+
+/* Input */
+.muxi-field { display: flex; flex-direction: column; gap: 0.375rem; }
+.muxi-field-label {
+  font-size: 0.8125rem; font-weight: 500; color: var(--text-secondary);
+}
+.muxi-field-hint { font-size: 0.75rem; color: var(--text-muted); }
+.muxi-field-error { font-size: 0.75rem; color: var(--danger); }
+.muxi-input {
+  width: 100%; box-sizing: border-box;
+  padding: 0.5625rem 0.75rem; border-radius: var(--radius-sm);
+  background: var(--bg-input); color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  font-family: var(--font-body); font-size: 0.9375rem;
+  transition: border-color var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
+}
+.muxi-input::placeholder { color: var(--text-muted); }
+.muxi-input:hover { border-color: var(--border-default); }
+.muxi-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.muxi-input--error { border-color: var(--danger); }
+.muxi-input--error:focus { box-shadow: 0 0 0 3px var(--danger-soft); }
+.muxi-input--mono { font-family: var(--font-mono); font-size: 0.875rem; }
+
+/* Badge */
+.muxi-badge {
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  padding: 0.125rem 0.5rem; border-radius: var(--radius-sm);
+  font-size: 0.75rem; font-weight: 600; line-height: 1.4;
+  border: 1px solid var(--border-subtle); background: var(--bg-card);
+  color: var(--text-secondary); font-variant-numeric: tabular-nums;
+}
+.muxi-badge--success { color: var(--success); border-color: rgba(34,197,94,0.3); background: var(--success-soft); }
+.muxi-badge--warning { color: var(--warning); border-color: rgba(245,158,11,0.3); background: var(--warning-soft); }
+.muxi-badge--danger { color: var(--danger); border-color: rgba(239,68,68,0.3); background: var(--danger-soft); }
+.muxi-badge--accent { color: var(--accent); border-color: rgba(56,189,248,0.3); background: var(--accent-soft); }
+.muxi-badge-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: currentColor;
+  animation: muxi-pulse 2s var(--ease-out) infinite;
+}
+@keyframes muxi-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Icon button */
+.muxi-icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2rem; height: 2rem; padding: 0;
+  border: 1px solid transparent; border-radius: var(--radius-sm);
+  background: transparent; color: var(--text-secondary);
+  cursor: pointer; flex-shrink: 0;
+  transition: background-color var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out),
+              border-color var(--duration-fast) var(--ease-out);
+}
+.muxi-icon-btn:hover { background: var(--bg-card); color: var(--text-primary); }
+.muxi-icon-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.muxi-icon-btn--bordered { border-color: var(--border-subtle); }
+
+/* Confirm dialog */
+.muxi-dialog-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem; overscroll-behavior: contain;
+}
+.muxi-dialog {
+  width: 100%; max-width: 420px;
+  background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl); box-shadow: var(--shadow-lg);
+  padding: 1.5rem;
+}
+.muxi-dialog-title {
+  font-family: var(--font-display); font-size: 1.125rem; font-weight: 700;
+  color: var(--text-primary); margin: 0 0 0.5rem;
+  text-wrap: balance;
+}
+.muxi-dialog-body { color: var(--text-secondary); font-size: 0.9375rem; margin: 0 0 1.25rem; line-height: 1.5; }
+.muxi-dialog-actions { display: flex; justify-content: flex-end; gap: 0.5rem; flex-wrap: wrap; }
+
+/* Page header (feat-04 preview) */
+.muxi-page-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+}
+.muxi-page-header-title {
+  font-family: var(--font-display); font-size: 1.5rem; font-weight: 700;
+  letter-spacing: -0.02em; color: var(--text-primary); margin: 0;
+  text-wrap: balance;
+}
+.muxi-page-header-desc { font-size: 0.875rem; color: var(--text-muted); margin: 0.25rem 0 0; }
+.muxi-page-header-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+
+/* Command palette trigger in sidebar */
+.muxi-sidebar-cmd-trigger {
+  display: flex; align-items: center; gap: 0.5rem;
+  margin: 0 0.625rem 0.75rem; padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-sm);
+  background: var(--bg-card-hover); color: var(--text-muted);
+  font-size: 0.8125rem; line-height: 1.25rem; cursor: pointer; font-family: var(--font-body);
+  transition: border-color var(--duration-fast) var(--ease-out),
+              background-color var(--duration-fast) var(--ease-out);
+}
+.muxi-sidebar-cmd-trigger .icon {
+  width: 1rem; height: 1rem; min-width: 1rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  margin: 0 !important; line-height: 1;
+}
+.muxi-sidebar-cmd-trigger:hover { border-color: var(--border-default); background: var(--bg-card); color: var(--text-secondary); }
+.muxi-sidebar-cmd-trigger span {
+  flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  display: flex; align-items: center; line-height: 1.25rem;
+}
+.muxi-sidebar-cmd-trigger kbd {
+  font-family: var(--font-mono); font-size: 0.6875rem; padding: 0.125rem 0.375rem;
+  border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--bg-elevated);
+  color: var(--text-muted);
+}
+.muxi-mobile-cmd-btn {
+  margin-left: auto;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.25rem; height: 2.25rem;
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-sm);
+  background: var(--bg-card); color: var(--text-secondary); cursor: pointer;
+}
+.muxi-mobile-cmd-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Command palette */
+.muxi-cmd-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(15,23,42,0.35); backdrop-filter: blur(4px);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 12vh 1rem 1rem; overscroll-behavior: contain;
+}
+.muxi-cmd {
+  width: 100%; max-width: 520px;
+  background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl); box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+.muxi-cmd-input-wrap {
+  display: flex; align-items: center; gap: 0.625rem;
+  padding: 0.875rem 1rem; border-bottom: 1px solid var(--border-subtle);
+}
+.muxi-cmd-input-wrap .icon { color: var(--text-muted); margin: 0 !important; }
+.muxi-cmd-input {
+  flex: 1; border: none; background: transparent; outline: none;
+  font-family: var(--font-body); font-size: 1rem; color: var(--text-primary);
+}
+.muxi-cmd-input::placeholder { color: var(--text-muted); }
+.muxi-cmd-kbd {
+  font-family: var(--font-mono); font-size: 0.6875rem; padding: 0.125rem 0.375rem;
+  border: 1px solid var(--border-subtle); border-radius: 4px; color: var(--text-muted);
+}
+.muxi-cmd-list {
+  list-style: none; margin: 0; padding: 0.375rem;
+  max-height: 320px; overflow-y: auto;
+}
+.muxi-cmd-item {
+  display: flex; align-items: center; gap: 0.625rem; width: 100%;
+  padding: 0.5625rem 0.75rem; border: none; border-radius: var(--radius-sm);
+  background: transparent; color: var(--text-primary);
+  font-family: var(--font-body); font-size: 0.875rem; cursor: pointer; text-align: left;
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+.muxi-cmd-item .icon { color: var(--text-muted); margin: 0 !important; width: 1.25rem; }
+.muxi-cmd-item.active, .muxi-cmd-item:hover { background: var(--accent-soft); }
+.muxi-cmd-item.active .icon { color: var(--accent); }
+.muxi-cmd-item-label { flex: 1; font-weight: 500; }
+.muxi-cmd-item-group { font-size: 0.75rem; color: var(--text-muted); }
+.muxi-cmd-empty { padding: 1.5rem; text-align: center; color: var(--text-muted); font-size: 0.875rem; }
+.muxi-cmd-footer {
+  display: flex; gap: 1rem; padding: 0.625rem 1rem;
+  border-top: 1px solid var(--border-subtle); font-size: 0.75rem; color: var(--text-muted);
+}
+.muxi-cmd-footer kbd {
+  font-family: var(--font-mono); font-size: 0.625rem; padding: 0.0625rem 0.3125rem;
+  border: 1px solid var(--border-subtle); border-radius: 3px; margin-right: 0.25rem;
+}

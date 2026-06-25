@@ -24,8 +24,9 @@ export function isRoot() {
 
 export function getSystemName() {
   let system_name = localStorage.getItem('system_name');
-  if (!system_name) return 'One API';
-  return system_name;
+  if (!system_name) return 'MUXI API';
+  if (system_name === 'One API') return 'MUXI API';
+  return system_name.replace(/\sOne(?=\s)/i, '').replace(/\s+/g, ' ').trim();
 }
 
 export function getLogo() {

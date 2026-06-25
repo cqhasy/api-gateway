@@ -15,6 +15,23 @@
     "logout": "Logout",
     "register": "Register"
   },
+  "nav": {
+    "main": "Main navigation",
+    "overview": "Overview",
+    "api_keys": "API Keys",
+    "infrastructure": "Infrastructure",
+    "billing": "Billing",
+    "observability": "Observability",
+    "administration": "Administration",
+    "system": "System",
+    "open_menu": "Open menu",
+    "close_menu": "Close menu",
+    "command_palette": "Command palette",
+    "command_placeholder": "Search pages…",
+    "command_empty": "No matching pages",
+    "command_navigate": "Navigate",
+    "command_open": "Open"
+  },
   "topup": {
     "title": "Top Up Center",
     "get_code": {
@@ -626,7 +643,7 @@
         },
         "completion": {
           "title": "Completion Ratio",
-          "placeholder": "A JSON text where keys are model names and values are ratios. These ratios are the proportion of completion to prompt ratio, which can override One API's internal ratios"
+          "placeholder": "A JSON text where keys are model names and values are ratios. These ratios are the proportion of completion to prompt ratio, which can override MUXI API's internal ratios"
         },
         "group": {
           "title": "Group Ratio",
@@ -723,7 +740,7 @@
         }
       },
       "copyright": {
-        "notice": "Removing One API's copyright notice requires authorization. Project maintenance requires significant effort, if this project is meaningful to you, please actively support it."
+        "notice": "Removing MUXI API's copyright notice requires authorization. Project maintenance requires significant effort, if this project is meaningful to you, please actively support it."
       }
     }
   },
@@ -735,8 +752,8 @@
   },
   "home": {
     "welcome": {
-      "title": "Welcome to One API",
-      "description": "One API is a LLM API management and distribution system that helps you better manage and use LLM APIs from various providers.",
+      "title": "Welcome to MUXI API",
+      "description": "MUXI API is a LLM API management and distribution system that helps you better manage and use LLM APIs from various providers.",
       "login_notice": "To use the service, please login or register first."
     },
     "system_status": {
@@ -764,6 +781,8 @@
   "auth": {
     "login": {
       "title": "User Login",
+      "subtitle": "Sign in with your account",
+      "brand_desc": "Unified AI model gateway. Create tokens after login to connect Claude, OpenAI, and more.",
       "username": "Username / Email",
       "password": "Password",
       "button": "Login",
@@ -779,6 +798,8 @@
     },
     "register": {
       "title": "New User Registration",
+      "description": "Unified access, distribution, and management of AI model interfaces. Create tokens after registering to connect with Claude, OpenAI, and other protocols.",
+      "subtitle": "Create an account to get started",
       "username": "Username (max 12 characters)",
       "password": "Password (8-20 characters)",
       "confirm_password": "Confirm password",
@@ -792,11 +813,15 @@
     },
     "reset": {
       "title": "Password Reset",
+      "subtitle": "Enter your email to receive a reset link",
+      "brand_desc": "Verify your identity via email to securely reset your password.",
+      "back_login": "Back to login",
       "email": "Email address",
       "button": "Submit",
       "notice": "The system will send an email containing a reset link to your mailbox. Please check your email.",
       "confirm": {
         "title": "Password Reset Confirmation",
+        "subtitle": "Confirm the reset request and receive a new password",
         "new_password": "New password",
         "button": "Submit",
         "button_disabled": "Password reset completed",
@@ -806,7 +831,7 @@
   },
   "about": {
     "title": "About",
-    "description": "One API is an open-source API management and proxy platform.",
+    "description": "MUXI API is an open-source API management and proxy platform.",
     "repository": "Repository: ",
     "loading_failed": "Loading failed"
   },

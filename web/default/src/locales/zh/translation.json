@@ -15,6 +15,23 @@
     "logout": "注销",
     "register": "注册"
   },
+  "nav": {
+    "main": "主导航",
+    "overview": "概览",
+    "api_keys": "API 密钥",
+    "infrastructure": "基础设施",
+    "billing": "计费",
+    "observability": "可观测性",
+    "administration": "管理",
+    "system": "系统",
+    "open_menu": "打开菜单",
+    "close_menu": "关闭菜单",
+    "command_palette": "命令面板",
+    "command_placeholder": "搜索页面…",
+    "command_empty": "没有匹配的页面",
+    "command_navigate": "选择",
+    "command_open": "打开"
+  },
   "topup": {
     "title": "充值中心",
     "get_code": {
@@ -624,7 +641,7 @@
         },
         "completion": {
           "title": "补全倍率",
-          "placeholder": "为一个 JSON 文本，键为模型名称，值为倍率，此处的倍率设置是模型补全倍率相较于提示倍率的比例，使用该设置可强制覆盖 One API 的内部比例"
+          "placeholder": "为一个 JSON 文本，键为模型名称，值为倍率，此处的倍率设置是模型补全倍率相较于提示倍率的比例，使用该设置可强制覆盖 MUXI API 的内部比例"
         },
         "group": {
           "title": "分组倍率",
@@ -719,13 +736,13 @@
         }
       },
       "copyright": {
-        "notice": "移除 One API 的版权标识必须首先获得授权，项目维护需要花费大量精力，如果本项目对你有意义，请主动支持本项目。"
+        "notice": "移除 MUXI API 的版权标识必须首先获得授权，项目维护需要花费大量精力，如果本项目对你有意义，请主动支持本项目。"
       }
     }
   },
   "about": {
     "title": "关于",
-    "description": "One API 是一个开源的接口管理和代理平台。",
+    "description": "MUXI API 是一个开源的接口管理和代理平台。",
     "repository": "项目地址：",
     "loading_failed": "加载失败"
   },
@@ -737,8 +754,8 @@
   },
   "home": {
     "welcome": {
-      "title": "欢迎使用 One API",
-      "description": "One API 是一个 LLM API 接口管理和分发系统，可以帮助您更好地管理和使用各大厂商的 LLM API。",
+      "title": "欢迎使用 MUXI API",
+      "description": "MUXI API 是一个 LLM API 接口管理和分发系统，可以帮助您更好地管理和使用各大厂商的 LLM API。",
       "login_notice": "如需使用，请先登录或注册。"
     },
     "system_status": {
@@ -766,6 +783,8 @@
   "auth": {
     "login": {
       "title": "用户登录",
+      "subtitle": "使用账号密码登录控制台",
+      "brand_desc": "统一接入、分发与管理 AI 模型接口。登录后创建令牌，即可对接 Claude、OpenAI 等协议。",
       "username": "用户名 / 邮箱地址",
       "password": "密码",
       "button": "登录",
@@ -781,6 +800,8 @@
     },
     "register": {
       "title": "新用户注册",
+      "description": "统一接入、分发与管理 AI 模型接口。注册后即可创建令牌，对接 Claude、OpenAI 等协议。",
+      "subtitle": "创建账户以开始使用",
       "username": "输入用户名，最长 12 位",
       "password": "输入密码，最短 8 位，最长 20 位",
       "confirm_password": "再次输入密码",
@@ -794,11 +815,15 @@
     },
     "reset": {
       "title": "密码重置",
+      "subtitle": "输入注册邮箱，我们将发送重置链接",
+      "brand_desc": "通过邮箱验证身份，安全重置您的账户密码。",
+      "back_login": "返回登录",
       "email": "邮箱地址",
       "button": "提交",
       "notice": "系统将向您的邮箱发送一封包含重置链接的邮件，请注意查收。",
       "confirm": {
         "title": "密码重置确认",
+        "subtitle": "确认重置请求并获取新密码",
         "new_password": "新密码",
         "button": "提交",
         "button_disabled": "密码重置完成",

@@ -1,18 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Button,
-  Form,
-  Grid,
-  Header,
-  Image,
-  Message,
-  Card,
-  Divider,
-} from 'semantic-ui-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { API, getLogo, showError, showInfo, showSuccess } from '../helpers';
+import { API, showError, showInfo, showSuccess } from '../helpers';
 import Turnstile from 'react-turnstile';
+import { AuthShell, Button, Input } from './muxi';
 
 const RegisterForm = () => {
   const { t } = useTranslation();
@@ -23,7 +14,7 @@ const RegisterForm = () => {
     email: '',
     verification_code: '',
   });
-  const { username, password, password2 } = inputs;
+  const { username, password, password2, email, verification_code } = inputs;
   const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [turnstileEnabled, setTurnstileEnabled] = useState(false);
   const [turnstileSiteKey, setTurnstileSiteKey] = useState('');
@@ -31,7 +22,6 @@ const RegisterForm = () => {
   const [loading, setLoading] = useState(false);
   const [disableButton, setDisableButton] = useState(false);
   const [countdown, setCountdown] = useState(30);
-  const logo = getLogo();
   let affCode = new URLSearchParams(window.location.search).get('aff');
   if (affCode) {
     localStorage.setItem('aff', affCode);
@@ -47,13 +37,13 @@ const RegisterForm = () => {
         setTurnstileSiteKey(status.turnstile_site_key);
       }
     }
-  });
+  }, []);
 
   useEffect(() => {
     let countdownInterval = null;
     if (disableButton && countdown > 0) {
       countdownInterval = setInterval(() => {
-        setCountdown(countdown - 1);
+        setCountdown((c) => c - 1);
       }, 1000);
     } else if (countdown === 0) {
       setDisableButton(false);
@@ -62,15 +52,15 @@ const RegisterForm = () => {
     return () => clearInterval(countdownInterval);
   }, [disableButton, countdown]);
 
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
   function handleChange(e) {
     const { name, value } = e.target;
-    console.log(name, value);
-    setInputs((inputs) => ({ ...inputs, [name]: value }));
+    setInputs((prev) => ({ ...prev, [name]: value }));
   }
 
   async function handleSubmit(e) {
+    e.preventDefault();
     if (password.length < 8) {
       showInfo(t('messages.error.password_length'));
       return;
@@ -79,19 +69,20 @@ const RegisterForm = () => {
       showInfo(t('messages.error.password_mismatch'));
       return;
     }
-    if (username && password) {
-      if (turnstileEnabled && turnstileToken === '') {
-        showInfo(t('messages.error.turnstile_wait'));
-        return;
-      }
-      setLoading(true);
+    if (!username || !password) return;
+    if (turnstileEnabled && turnstileToken === '') {
+      showInfo(t('messages.error.turnstile_wait'));
+      return;
+    }
+    setLoading(true);
+    try {
       if (!affCode) {
         affCode = localStorage.getItem('aff');
       }
-      inputs.aff_code = affCode;
+      const payload = { ...inputs, aff_code: affCode };
       const res = await API.post(
         `/api/user/register?turnstile=${turnstileToken}`,
-        inputs
+        payload
       );
       const { success, message } = res.data;
       if (success) {
@@ -100,167 +91,132 @@ const RegisterForm = () => {
       } else {
         showError(message);
       }
+    } finally {
       setLoading(false);
     }
   }
 
   const sendVerificationCode = async () => {
-    if (inputs.email === '') return;
+    if (email === '') return;
     if (turnstileEnabled && turnstileToken === '') {
       showInfo(t('messages.error.turnstile_wait'));
       return;
     }
     setDisableButton(true);
     setLoading(true);
-    const res = await API.get(
-      `/api/verification?email=${inputs.email}&turnstile=${turnstileToken}`
-    );
-    const { success, message } = res.data;
-    if (success) {
-      showSuccess(t('messages.success.verification_code'));
-    } else {
-      showError(message);
-      setDisableButton(false);
-      setCountdown(30);
+    try {
+      const res = await API.get(
+        `/api/verification?email=${email}&turnstile=${turnstileToken}`
+      );
+      const { success, message } = res.data;
+      if (success) {
+        showSuccess(t('messages.success.verification_code'));
+      } else {
+        showError(message);
+        setDisableButton(false);
+        setCountdown(30);
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
-    <Grid textAlign='center' style={{ marginTop: '48px' }}>
-      <Grid.Column style={{ maxWidth: 450 }}>
-        <Card
-          fluid
-          className='chart-card'
-          style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.12)' }}
-        >
-          <Card.Content>
-            <Card.Header>
-              <Header
-                as='h2'
-                textAlign='center'
-                style={{ marginBottom: '1.5em' }}
-              >
-                <Image src={logo} style={{ marginBottom: '10px' }} />
-                <Header.Content>{t('auth.register.title')}</Header.Content>
-              </Header>
-            </Card.Header>
-            <Form size='large'>
-              <Form.Input
-                fluid
-                icon='user'
-                iconPosition='left'
-                placeholder={t('auth.register.username')}
-                onChange={handleChange}
-                name='username'
-                style={{ marginBottom: '1em' }}
-              />
-              <Form.Input
-                fluid
-                icon='lock'
-                iconPosition='left'
-                placeholder={t('auth.register.password')}
-                onChange={handleChange}
-                name='password'
-                type='password'
-                style={{ marginBottom: '1em' }}
-              />
-              <Form.Input
-                fluid
-                icon='lock'
-                iconPosition='left'
-                placeholder={t('auth.register.confirm_password')}
-                onChange={handleChange}
-                name='password2'
-                type='password'
-                style={{ marginBottom: '1em' }}
-              />
+    <AuthShell
+      title={t('auth.register.title')}
+      subtitle={t('auth.register.subtitle')}
+      brandDescription={t('auth.register.description')}
+      footer={
+        <div className='muxi-auth-footer muxi-auth-footer--center'>
+          {t('auth.register.has_account')}
+          <Link to='/login' className='muxi-auth-link'>
+            {t('auth.register.login')}
+          </Link>
+        </div>
+      }
+    >
+      <form onSubmit={handleSubmit}>
+        <div className='muxi-auth-field-stack'>
+          <Input
+            id='register-username'
+            name='username'
+            label={t('auth.register.username')}
+            placeholder={t('auth.register.username')}
+            value={username}
+            onChange={handleChange}
+            autoComplete='username'
+            spellCheck={false}
+          />
+          <Input
+            id='register-password'
+            name='password'
+            type='password'
+            label={t('auth.register.password')}
+            placeholder={t('auth.register.password')}
+            value={password}
+            onChange={handleChange}
+            autoComplete='new-password'
+          />
+          <Input
+            id='register-password2'
+            name='password2'
+            type='password'
+            label={t('auth.register.confirm_password')}
+            placeholder={t('auth.register.confirm_password')}
+            value={password2}
+            onChange={handleChange}
+            autoComplete='new-password'
+          />
 
-              {showEmailVerification && (
-                <>
-                  <Form.Input
-                    fluid
-                    icon='mail'
-                    iconPosition='left'
-                    placeholder={t('auth.register.email')}
-                    onChange={handleChange}
-                    name='email'
-                    type='email'
-                    action={
-                      <Button onClick={sendVerificationCode} disabled={loading}>
-                        {disableButton
-                          ? t('auth.register.get_code_retry', { countdown })
-                          : t('auth.register.get_code')}
-                      </Button>
-                    }
-                    style={{ marginBottom: '1em' }}
-                  />
-                  <Form.Input
-                    fluid
-                    icon='lock'
-                    iconPosition='left'
-                    placeholder={t('auth.register.verification_code')}
-                    onChange={handleChange}
-                    name='verification_code'
-                    style={{ marginBottom: '1em' }}
-                  />
-                </>
-              )}
-
-              {turnstileEnabled && (
-                <div
-                  style={{
-                    marginBottom: '1em',
-                    display: 'flex',
-                    justifyContent: 'center',
-                  }}
+          {showEmailVerification && (
+            <>
+              <div className='muxi-input-with-action'>
+                <Input
+                  id='register-email'
+                  name='email'
+                  type='email'
+                  label={t('auth.register.email')}
+                  placeholder={t('auth.register.email')}
+                  value={email}
+                  onChange={handleChange}
+                  autoComplete='email'
+                />
+                <Button
+                  type='button'
+                  variant='secondary'
+                  disabled={loading || disableButton}
+                  onClick={sendVerificationCode}
                 >
-                  <Turnstile
-                    sitekey={turnstileSiteKey}
-                    onVerify={(token) => {
-                      setTurnstileToken(token);
-                    }}
-                  />
-                </div>
-              )}
-
-              <Button
-                fluid
-                size='large'
-                onClick={handleSubmit}
-                style={{
-                  background: '#2F73FF', // 使用更现代的蓝色
-                  color: 'white',
-                  marginBottom: '1.5em',
-                }}
-                loading={loading}
-              >
-                {t('auth.register.button')}
-              </Button>
-            </Form>
-
-            <Divider />
-            <Message style={{ background: 'transparent', boxShadow: 'none' }}>
-              <div
-                style={{
-                  textAlign: 'center',
-                  fontSize: '0.9em',
-                  color: '#666',
-                }}
-              >
-                {t('auth.register.has_account')}
-                <Link
-                  to='/login'
-                  style={{ color: '#2185d0', marginLeft: '2px' }}
-                >
-                  {t('auth.register.login')}
-                </Link>
+                  {disableButton
+                    ? t('auth.register.get_code_retry', { countdown })
+                    : t('auth.register.get_code')}
+                </Button>
               </div>
-            </Message>
-          </Card.Content>
-        </Card>
-      </Grid.Column>
-    </Grid>
+              <Input
+                id='register-code'
+                name='verification_code'
+                label={t('auth.register.verification_code')}
+                placeholder={t('auth.register.verification_code')}
+                value={verification_code}
+                onChange={handleChange}
+                autoComplete='off'
+                spellCheck={false}
+              />
+            </>
+          )}
+
+          {turnstileEnabled && (
+            <div className='muxi-auth-turnstile'>
+              <Turnstile sitekey={turnstileSiteKey} onVerify={setTurnstileToken} />
+            </div>
+          )}
+
+          <Button type='submit' variant='primary' size='lg' block loading={loading} className='muxi-auth-submit'>
+            {t('auth.register.button')}
+          </Button>
+        </div>
+      </form>
+    </AuthShell>
   );
 };
 
