@@ -429,6 +429,10 @@
     }
   },
   "dashboard": {
+    "subtitle": "Track API usage trends and model distribution",
+    "summary": {
+      "today": "Today"
+    },
     "charts": {
       "requests": {
         "title": "Model Request Trend",
@@ -752,10 +756,15 @@
   },
   "home": {
     "welcome": {
-      "title": "Welcome to MUXI API",
+      "title": "Welcome to {{name}}",
       "description": "MUXI API is a LLM API management and distribution system that helps you better manage and use LLM APIs from various providers.",
-      "login_notice": "To use the service, please login or register first."
+      "login_notice": "To use the service, please login or register first.",
+      "cta_token": "Manage API tokens"
     },
+    "quick_links": {
+      "title": "Quick links"
+    },
+    "custom_content_title": "Home content",
     "system_status": {
       "title": "System Status",
       "info": {

@@ -1,7 +1,7 @@
 /* ===================================================================
-   MUXI API — "Clear Horizon" Design System v2
+   MUXI API — "Studio Ink" Design System v4
 
-   Aesthetic: Light, airy SaaS console. Soft slate + crisp blue accent.
+   Claude warmth + Cursor precision. Spec: docs/redesign-v4-plan.md
    =================================================================== */
 
 /* ===================================================================
@@ -10,32 +10,47 @@
 :root {
   color-scheme: light;
 
-  /* Background layers */
-  --bg-root: #f1f5f9;
-  --bg-elevated: #ffffff;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f8fafc;
-  --bg-input: #ffffff;
-  --bg-tooltip: #1e293b;
-  --bg-sidebar: #ffffff;
+  /* Studio Ink — warm canvas */
+  --bg-root: #f7f5f0;
+  --bg-surface-1: #fffcf8;
+  --bg-surface-2: #efede8;
+  --bg-elevated: var(--bg-surface-1);
+  --bg-card: var(--bg-surface-1);
+  --bg-card-hover: var(--bg-surface-2);
+  --bg-input: var(--bg-surface-1);
+  --bg-tooltip: #1c1917;
+  --bg-sidebar: #efede8;
 
-  /* Borders */
-  --border-subtle: #e2e8f0;
-  --border-default: #cbd5e1;
-  --border-strong: #94a3b8;
+  /* Borders — hairline */
+  --border-subtle: rgba(28, 25, 23, 0.08);
+  --border-default: rgba(28, 25, 23, 0.14);
+  --border-strong: rgba(28, 25, 23, 0.22);
 
-  /* Text */
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
-  --text-disabled: #cbd5e1;
-  --text-on-accent: #ffffff;
+  /* Text — stone ink */
+  --text-primary: #1c1917;
+  --text-secondary: #57534e;
+  --text-muted: #a8a29e;
+  --text-disabled: #d6d3d1;
+  --text-on-accent: #fffcf8;
 
-  /* Accent — Clear blue */
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
-  --accent-soft: rgba(37,99,235,0.08);
-  --accent-glow: rgba(37,99,235,0.15);
+  /* Brand mark — gold in logo ONLY */
+  --brand: #e5a800;
+  --brand-hover: #cc9600;
+  --brand-deep: #92400e;
+  --brand-soft: rgba(229, 168, 0, 0.12);
+  --brand-glow: rgba(229, 168, 0, 0.2);
+  --brand-ink: #1c1917;
+  --brand-gradient: linear-gradient(135deg, #fcd34d 0%, #e5a800 55%, #cc9600 100%);
+
+  /* Accent — terracotta (Claude-like), NOT gold */
+  --accent: #c96442;
+  --accent-hover: #b85438;
+  --accent-soft: rgba(201, 100, 66, 0.1);
+  --accent-glow: rgba(201, 100, 66, 0.18);
+
+  /* Ink — primary actions (Cursor-like) */
+  --ink: #292524;
+  --ink-hover: #1c1917;
 
   /* Semantic */
   --success: #16a34a;
@@ -45,29 +60,44 @@
   --danger: #dc2626;
   --danger-soft: rgba(220,38,38,0.08);
   --info: #2563eb;
-  --info-soft: rgba(37,99,235,0.08);
+  --info-soft: rgba(37, 99, 235, 0.08);
+  --link: var(--accent);
+  --link-hover: var(--accent-hover);
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(15,23,42,0.05);
-  --shadow-md: 0 4px 12px rgba(15,23,42,0.07);
-  --shadow-lg: 0 12px 32px rgba(15,23,42,0.10);
-  --shadow-card-hover: 0 8px 24px rgba(15,23,42,0.08), 0 0 0 1px var(--border-subtle);
+  /* Shadows — flat cards, minimal lift */
+  --shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.04);
+  --shadow-md: 0 4px 16px rgba(28, 25, 23, 0.06);
+  --shadow-lg: 0 12px 40px rgba(28, 25, 23, 0.08);
+  --shadow-card: none;
+  --shadow-card-hover: 0 1px 3px rgba(28, 25, 23, 0.06);
 
-  /* Radii */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-full: 9999px;
+  /* Radii — soft 10px */
+  --radius-ui: 10px;
+  --radius-sm: var(--radius-ui);
+  --radius-md: var(--radius-ui);
+  --radius-lg: var(--radius-ui);
+  --radius-xl: var(--radius-ui);
+  --radius-full: 9999px; /* avatars, status dots only */
+
+  /* Spacing — compact density */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --section-gap: var(--space-6);
+  --page-padding-y: 2rem;
+  --page-padding-x: 2.5rem;
 
   /* Layout */
-  --sidebar-width: 240px;
+  --sidebar-width: 252px;
   --content-max: 1280px;
   --header-height: 56px;
 
-  /* Typography */
-  --font-display: 'Syne', 'Manrope', 'DM Sans', sans-serif;
-  --font-body: 'IBM Plex Sans', 'DM Sans', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  /* Typography — editorial serif + humanist sans */
+  --font-display: 'Newsreader', 'Songti SC', 'Noto Serif SC', Georgia, serif;
+  --font-body: 'Figtree', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --font-mono: 'JetBrains Mono', 'Consolas', monospace;
 
   /* Motion */
@@ -94,9 +124,9 @@
   --muxi-shadow-md: var(--shadow-md);
   --muxi-shadow-lg: var(--shadow-lg);
   --muxi-transition: var(--duration-fast) var(--ease-out);
-  --muxi-gold: var(--accent);
-  --muxi-gold-soft: var(--accent-soft);
-  --muxi-gold-muted: var(--accent-soft);
+  --muxi-gold: var(--brand);
+  --muxi-gold-soft: var(--brand-soft);
+  --muxi-gold-muted: var(--brand-soft);
   --muxi-success: var(--success);
 }
 
@@ -111,26 +141,15 @@ body {
   color: var(--text-primary);
   font-family: var(--font-body);
   font-size: 0.9375rem;
-  line-height: 1.6;
+  line-height: 1.65;
+  letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
-body.muxi-app::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  background:
-    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(37,99,235,0.06) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 40% at 90% 0%, rgba(14,165,233,0.05) 0%, transparent 50%),
-    var(--bg-root);
-}
-
-::selection { background: var(--accent-soft); color: var(--accent); }
+::selection { background: var(--accent-soft); color: var(--text-primary); }
 
 /* Skip link */
 .muxi-skip-link {
@@ -156,27 +175,57 @@ body.muxi-app::before {
   display: flex; flex-direction: column;
   z-index: 100;
   overflow-y: auto;
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
 }
+.muxi-sidebar::before { display: none; }
 .muxi-sidebar::after {
   content: ''; position: absolute; top: 0; right: -1px;
   width: 1px; height: 100%;
   background: linear-gradient(180deg, var(--border-subtle), transparent 80%);
 }
 
+/* Brand lockup — mark + MUXI word + suffix */
+.muxi-brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  text-decoration: none;
+  color: inherit;
+}
+.muxi-brand-lockup-text {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  line-height: 1;
+}
+.muxi-brand-word {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--brand-ink);
+}
+.muxi-brand-suffix {
+  font-family: var(--font-display);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.muxi-brand-lockup--compact .muxi-brand-word { font-size: 0.9375rem; }
+.muxi-brand-lockup--compact .muxi-brand-suffix { font-size: 0.625rem; }
+.muxi-brand-mark { flex-shrink: 0; display: block; }
+
 /* Brand */
 .muxi-sidebar-brand {
-  display: flex; align-items: center; gap: 0.625rem;
-  padding: 1.25rem 1.25rem 1.125rem;
+  display: flex; align-items: center;
+  padding: 1.125rem 1.25rem 1rem;
   text-decoration: none;
   border-bottom: 1px solid var(--border-subtle);
   margin-bottom: 0.5rem;
-}
-.muxi-sidebar-brand img { height: 30px; width: auto; border-radius: 6px; }
-.muxi-sidebar-brand span {
-  font-family: var(--font-display);
-  font-size: 1rem; font-weight: 700; letter-spacing: 0.02em;
-  color: var(--text-primary);
+  position: relative;
+  z-index: 2;
 }
 
 /* Nav */
@@ -211,7 +260,9 @@ body.muxi-app::before {
 .muxi-sidebar-item:hover { background: var(--bg-card); color: var(--text-primary); }
 .muxi-sidebar-item:hover .icon { opacity: 0.8; }
 .muxi-sidebar-item.active {
-  background: var(--accent-soft); color: var(--text-primary); font-weight: 600;
+  background: rgba(28, 25, 23, 0.06);
+  color: var(--text-primary);
+  font-weight: 600;
 }
 .muxi-sidebar-item.active .icon { opacity: 1; color: var(--accent); }
 
@@ -229,7 +280,7 @@ body.muxi-app::before {
   display: none;
   position: fixed; top: 0; left: 0; right: 0;
   height: var(--header-height);
-  background: var(--bg-elevated);
+  background: var(--bg-sidebar);
   border-bottom: 1px solid var(--border-subtle);
   align-items: center; gap: 0.75rem;
   padding: 0 1rem; z-index: 101;
@@ -249,11 +300,12 @@ body.muxi-app::before {
   text-decoration: none; color: var(--text-primary);
   font-family: var(--font-display); font-weight: 700; font-size: 0.9375rem;
 }
-.muxi-mobile-brand img { border-radius: 6px; }
+.muxi-mobile-brand img { border-radius: var(--radius-md); }
 .muxi-sidebar-overlay {
   display: none;
   position: fixed; inset: 0; z-index: 99;
-  background: rgba(15,23,42,0.25); backdrop-filter: blur(2px);
+  background: rgba(28, 25, 23, 0.28);
+  backdrop-filter: blur(3px);
 }
 .muxi-sidebar-brand--desktop { display: flex; }
 
@@ -268,8 +320,8 @@ body.muxi-app::before {
 }
 .muxi-sidebar-user-avatar {
   width: 32px; height: 32px; border-radius: var(--radius-sm);
-  background: var(--bg-card); color: var(--text-primary);
-  border: 1px solid var(--border-subtle);
+  background: var(--ink); color: var(--text-on-accent);
+  border: none;
   display: flex; align-items: center; justify-content: center;
   font-weight: 600; font-size: 0.8125rem; flex-shrink: 0;
 }
@@ -280,12 +332,12 @@ body.muxi-app::before {
 .muxi-sidebar-login-btn {
   display: block; width: 100%; text-align: center; text-decoration: none;
   padding: 0.5rem; border-radius: var(--radius-sm);
-  background: var(--accent); color: var(--text-on-accent);
+  background: var(--ink); color: var(--text-on-accent);
   font-weight: 600; font-size: 0.875rem;
   transition: background-color var(--duration-fast) var(--ease-out);
   font-family: var(--font-body);
 }
-.muxi-sidebar-login-btn:hover { background: var(--accent-hover); }
+.muxi-sidebar-login-btn:hover { background: var(--ink-hover); }
 
 /* ===================================================================
    5. MAIN CONTENT
@@ -294,8 +346,9 @@ body.muxi-app::before {
   margin-left: var(--sidebar-width);
   flex: 1;
   min-height: 100vh;
-  padding: 2.5rem 2rem;
+  padding: var(--page-padding-y) var(--page-padding-x);
   max-width: var(--content-max);
+  background: var(--bg-root);
 }
 
 /* ===================================================================
@@ -309,8 +362,8 @@ body.muxi-app::before {
   margin: 0 0 0.25rem;
 }
 .muxi-page-subtitle {
-  font-size: 0.9375rem; color: var(--text-muted);
-  margin: 0 0 2rem;
+  font-size: 0.875rem; color: var(--text-muted);
+  margin: 0 0 var(--space-4);
 }
 .muxi-section-label {
   font-family: var(--font-display);
@@ -322,40 +375,179 @@ body.muxi-app::before {
 .muxi-text-mono { font-family: var(--font-mono); }
 
 /* ===================================================================
-   7. STAT BAR
+   7. METRIC CARDS & STAT BAR
    =================================================================== */
-.muxi-stat-bar {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 0; margin-bottom: 2rem;
+.muxi-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-3);
+  margin-bottom: var(--section-gap);
+}
+.muxi-metric-grid--cols-3 { grid-template-columns: repeat(3, 1fr); }
+.muxi-metric-grid--cols-2 { grid-template-columns: repeat(2, 1fr); }
+
+/* KPI rhythm — primary row + secondary row (Home) */
+.muxi-metric-grid--rhythm {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* Dashboard — first metric leads, others support */
+.muxi-metric-grid--emphasis-first {
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.muxi-metric-card {
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-4) var(--space-4) var(--space-3);
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  transition: border-color var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out),
+              transform var(--duration-fast) var(--ease-out);
+}
+.muxi-metric-card::before { display: none; }
+.muxi-metric-card--highlight,
+.muxi-metric-card--accent {
+  border-color: var(--border-default);
+  background: var(--bg-card);
+}
+.muxi-metric-card--primary.muxi-metric-card--highlight {
+  border-color: var(--border-default);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-card);
+}
+.muxi-metric-card--primary.muxi-metric-card--highlight .muxi-metric-value {
+  color: var(--text-primary);
+}
+.muxi-metric-card:hover {
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-card-hover);
+  transform: none;
+}
+.muxi-metric-card--success .muxi-metric-value { color: var(--success); }
+.muxi-metric-card--warning .muxi-metric-value { color: var(--warning); }
+.muxi-metric-card--danger .muxi-metric-value { color: var(--danger); }
+.muxi-metric-card--accent .muxi-metric-value { color: var(--accent); }
+
+/* Size tiers — visual hierarchy (feat-10) */
+.muxi-metric-card--primary {
+  padding: var(--space-5) var(--space-5) var(--space-4);
+}
+.muxi-metric-card--primary .muxi-metric-label {
+  color: var(--text-secondary);
+  letter-spacing: 0.06em;
+}
+.muxi-metric-card--primary .muxi-metric-value {
+  font-size: clamp(1.75rem, 3.2vw, 2.375rem);
+  letter-spacing: -0.04em;
+}
+
+.muxi-metric-card--secondary {
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-card);
+}
+.muxi-metric-card--secondary .muxi-metric-label {
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+.muxi-metric-card--secondary .muxi-metric-value {
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-secondary);
+}
+.muxi-metric-card--secondary .muxi-metric-value-slot {
+  min-height: 1.375rem;
+}
+.muxi-metric-card--secondary::before {
+  opacity: 0;
+}
+.muxi-metric-card--secondary:hover::before {
+  opacity: 0.6;
+}
+
+.muxi-metric-card--secondary .muxi-metric-card-body { margin-top: var(--space-2); }
+.muxi-metric-card--secondary .muxi-chart-sparkline { opacity: 0.92; }
+
+.muxi-metric-card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-2); margin-bottom: var(--space-2);
+}
+.muxi-metric-label {
+  font-size: 0.6875rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+.muxi-metric-sublabel {
+  font-size: 0.6875rem; font-weight: 500;
+  color: var(--text-muted); letter-spacing: 0.02em;
+}
+.muxi-metric-value {
+  font-family: var(--font-display);
+  font-size: clamp(1.375rem, 2.5vw, 1.875rem);
+  font-weight: 700; letter-spacing: -0.03em;
+  line-height: 1.1; color: var(--text-primary);
+}
+.muxi-metric-value-slot {
+  display: flex; align-items: center; min-height: 1.75rem;
+}
+.muxi-metric-card-body { margin-top: var(--space-3); }
+.muxi-metric-grid--config { margin-bottom: 0; }
+
+/* Stat bar — same visual language as metric grid (list pages) */
+.muxi-stat-bar {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-3); margin-bottom: var(--section-gap);
+  background: transparent; border: none;
 }
 .muxi-stat-bar-item {
-  padding: 1.25rem 1.5rem;
-  display: flex; flex-direction: column; gap: 0.25rem;
-  border-right: 1px solid var(--border-subtle);
-  transition: background 200ms var(--ease-out);
+  padding: var(--space-4);
+  display: flex; flex-direction: column; gap: var(--space-1);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  transition: border-color var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
 }
-.muxi-stat-bar-item:last-child { border-right: none; }
-.muxi-stat-bar-item:hover { background: var(--bg-card-hover); }
+.muxi-stat-bar-item:hover {
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-card-hover);
+}
 .muxi-stat-bar-label {
-  font-size: 0.75rem; font-weight: 500;
-  color: var(--text-muted); letter-spacing: 0.02em;
+  font-size: 0.6875rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--text-muted);
 }
 .muxi-stat-bar-value {
   font-family: var(--font-display);
-  font-size: 1.5rem; font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.02em;
+  font-size: clamp(1.375rem, 2.5vw, 1.75rem);
+  font-weight: 700; letter-spacing: -0.03em;
+  line-height: 1.1; color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
 }
 .muxi-stat-bar-value.success { color: var(--success); }
 .muxi-stat-bar-value.warning { color: var(--warning); }
 .muxi-stat-bar-value.danger { color: var(--danger); }
 
 @media screen and (max-width: 768px) {
+  .muxi-metric-grid,
+  .muxi-metric-grid--cols-3,
+  .muxi-metric-grid--emphasis-first,
   .muxi-stat-bar { grid-template-columns: repeat(2, 1fr); }
+}
+@media screen and (max-width: 480px) {
+  .muxi-metric-grid,
+  .muxi-metric-grid--rhythm,
+  .muxi-metric-grid--cols-3,
+  .muxi-metric-grid--cols-2,
+  .muxi-metric-grid--emphasis-first,
+  .muxi-stat-bar { grid-template-columns: 1fr; }
 }
 
 /* ===================================================================
@@ -393,7 +585,7 @@ body.muxi-app::before {
   position: absolute; right: 0.875rem; top: 50%; transform: translateY(-50%);
   font-size: 0.75rem; color: var(--text-disabled);
   background: var(--bg-card); padding: 0.15rem 0.4rem;
-  border-radius: 4px; border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md); border: 1px solid var(--border-subtle);
   pointer-events: none;
 }
 
@@ -745,7 +937,7 @@ body.muxi-app::before {
 .ui.checkbox label:before {
   background: var(--bg-input) !important;
   border: 1px solid var(--border-default) !important;
-  border-radius: 4px !important;
+  border-radius: var(--radius-md) !important;
 }
 .ui.checkbox input:checked ~ .box:before,
 .ui.checkbox input:checked ~ label:before {
@@ -793,7 +985,7 @@ body.muxi-app::before {
 }
 .ui.pagination.menu .item {
   color: var(--text-secondary) !important; font-family: var(--font-body) !important;
-  font-size: 0.875rem; border-radius: 6px !important;
+  font-size: 0.875rem; border-radius: var(--radius-md) !important;
   min-width: 34px; height: 34px; padding: 0 0.5rem;
   transition: all 150ms var(--ease-out) !important;
   background: transparent !important;
@@ -833,21 +1025,47 @@ body.muxi-app::before {
   max-width: 920px; width: 100%; min-height: 520px;
   border-radius: var(--radius-xl); overflow: hidden;
   border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
 }
+/* v4 — Claude-style centered card */
+.muxi-auth-shell--centered {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  min-height: auto;
+  padding: 2.5rem 2rem 2rem;
+  background: var(--bg-surface-1);
+  box-shadow: none;
+}
+.muxi-auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.75rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.muxi-auth-brand-lockup--centered {
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+.muxi-auth-brand-tagline {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+  max-width: 28ch;
+  margin-inline: auto;
+}
+.muxi-auth-body { width: 100%; }
 .muxi-auth-brand {
-  background: linear-gradient(155deg, #eff6ff 0%, #dbeafe 45%, #f8fafc 100%);
+  background: var(--bg-surface-2);
   padding: 3rem 2.5rem; display: flex; flex-direction: column;
   justify-content: space-between; position: relative; overflow: hidden;
 }
-.muxi-auth-brand::before {
-  content: ''; position: absolute; inset: 0;
-  background:
-    radial-gradient(circle at 30% 70%, rgba(37,99,235,0.12) 0%, transparent 50%),
-    radial-gradient(circle at 70% 20%, rgba(14,165,233,0.08) 0%, transparent 40%);
-  pointer-events: none;
-}
-.muxi-auth-brand-logo { height: 40px; width: auto; position: relative; z-index: 1; }
+.muxi-auth-brand::before { display: none; }
+.muxi-auth-brand-content { position: relative; z-index: 1; }
+.muxi-auth-brand-lockup { margin-bottom: 1.25rem; }
+.muxi-auth-brand-lockup .muxi-brand-word { font-size: 1.75rem; }
+.muxi-auth-brand-lockup .muxi-brand-suffix { font-size: 0.75rem; }
 .muxi-auth-brand h1 {
   position: relative; z-index: 1; color: var(--text-primary);
   font-family: var(--font-display);
@@ -855,6 +1073,14 @@ body.muxi-app::before {
   margin: 1.5rem 0 0.75rem; line-height: 1.2;
 }
 .muxi-auth-brand p { position: relative; z-index: 1; color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.6; max-width: 28ch; margin: 0; }
+.muxi-auth-brand-footer {
+  position: relative; z-index: 1;
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
 .auth-brand-footer { position: relative; z-index: 1; color: var(--text-muted); font-size: 0.8125rem; letter-spacing: 0.04em; }
 
 .muxi-auth-form { background: var(--bg-elevated); padding: 2.5rem 2.5rem; }
@@ -899,36 +1125,149 @@ body.muxi-app::before {
 .muxi-wechat-modal { padding: 1rem !important; }
 .muxi-wechat-modal img { border-radius: var(--radius-md); margin-bottom: 0.75rem; }
 .muxi-wechat-modal-tip { text-align: center; color: var(--text-secondary); font-size: 0.875rem; margin: 0 0 1rem; }
-.muxi-auth-form-heading { font-family: var(--font-display); font-size: 1.375rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text-primary); margin: 0 0 0.35rem; }
-.muxi-auth-form-subtitle { margin: 0 0 1.75rem; color: var(--text-muted); font-size: 0.9375rem; }
-.muxi-auth-link { color: var(--accent); font-weight: 600; margin-left: 4px; text-decoration: none; transition: color 150ms; }
-.muxi-auth-link:hover { color: var(--accent-hover); }
+.muxi-auth-form-heading {
+  font-family: var(--font-display);
+  font-size: 1.625rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin: 0 0 0.35rem;
+  text-align: center;
+}
+.muxi-auth-form-subtitle {
+  margin: 0 0 1.75rem;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  text-align: center;
+}
+.muxi-auth-link { color: var(--link); font-weight: 600; margin-left: 4px; text-decoration: none; transition: color 150ms; }
+.muxi-auth-link:hover { color: var(--link-hover); }
 .muxi-auth-links-row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; font-size: 0.875rem; color: var(--text-secondary); }
 .muxi-auth-form .ui.button[type="submit"] { margin-top: 1.25rem; height: 46px; font-size: 1rem; }
 
 /* ===================================================================
    19. HOME PAGE
    =================================================================== */
-.muxi-home-hero {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 2rem;
-}
-.muxi-home-hero-text {
+.muxi-home-intro {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--section-gap);
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl);
-  padding: 2.5rem;
-  display: flex; flex-direction: column; justify-content: center;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  flex-wrap: wrap;
 }
-.muxi-home-hero-text h1 {
+.muxi-home-intro-copy { flex: 1; min-width: min(100%, 280px); }
+.muxi-home-intro-eyebrow {
+  margin: 0 0 var(--space-1);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--brand-deep);
+}
+.muxi-home-intro h1 {
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 700;
-  letter-spacing: -0.03em; line-height: 1.15; color: var(--text-primary);
-  margin: 0 0 0.75rem;
+  font-size: clamp(1.125rem, 2vw, 1.375rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-2);
 }
-.muxi-home-hero-text p { color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.6; margin: 0 0 1.5rem; max-width: 36ch; }
-.muxi-home-hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-.muxi-home-hero-hint { margin-top: 1rem; font-size: 0.8125rem; color: var(--text-muted); }
-.muxi-home-hero-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+.muxi-home-intro-copy > p {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.55;
+  margin: 0;
+  max-width: 52ch;
+}
+.muxi-home-intro-hint {
+  margin-top: var(--space-2) !important;
+  font-size: 0.8125rem !important;
+  color: var(--text-muted) !important;
+}
+.muxi-home-intro-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: center;
+  padding-top: var(--space-1);
+}
+
+.muxi-tabular { font-variant-numeric: tabular-nums; }
+
+.muxi-home-loading { display: flex; flex-direction: column; gap: var(--space-3); }
+.muxi-home-loading-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-3); }
+.muxi-home-loading-grid--rhythm { grid-template-columns: repeat(2, 1fr); }
+.muxi-home-loading-card { border-radius: var(--radius-md); }
+.muxi-home-loading-card--primary { height: 108px; }
+.muxi-home-loading-card--secondary { height: 72px; }
+.muxi-home-loading-intro { height: 120px; border-radius: var(--radius-md); }
+
+.muxi-home-quick-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.muxi-home-quick-link {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-card);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  transition: border-color var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out),
+              background var(--duration-fast) var(--ease-out);
+}
+.muxi-home-quick-link:hover {
+  border-color: var(--border-default);
+  color: var(--text-primary);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-card-hover);
+}
+.muxi-home-quick-link .icon {
+  width: 1rem;
+  height: 1rem;
+  min-width: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 0.875rem !important;
+  line-height: 1 !important;
+  color: var(--brand-deep);
+  opacity: 0.95;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.muxi-home-quick-link .icon::before {
+  margin: 0 !important;
+  line-height: 1;
+}
+.muxi-home-quick-link > span {
+  line-height: 1.25rem;
+  display: flex;
+  align-items: center;
+}
+
+.muxi-home-iframe { width: 100%; min-height: calc(100vh - var(--header-height) - 4rem); border: none; border-radius: var(--radius-lg); background: var(--bg-card); }
+.muxi-home-markdown { max-width: 72ch; margin: 0 auto; }
 
 .muxi-stat-item {
   padding: 1.125rem 1.25rem; border-radius: var(--radius-md);
@@ -941,18 +1280,27 @@ body.muxi-app::before {
 
 .muxi-accent-bar { height: 3px; width: 40px; background: var(--accent); border-radius: 2px; margin-bottom: 1.25rem; }
 .muxi-grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.75rem; }
-.muxi-section { margin-bottom: 2rem; }
-.muxi-section-title { font-family: var(--font-display); font-size: 0.9375rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.75rem; letter-spacing: -0.01em; }
+.muxi-section { margin-bottom: var(--section-gap); }
+.muxi-section--compact { margin-bottom: var(--space-4); }
+.muxi-section-title {
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
 
 /* ===================================================================
    20. SEMANTIC UI OVERRIDES
    =================================================================== */
 /* Buttons */
 .ui.primary.button, .ui.blue.button {
-  background: var(--accent) !important; color: var(--text-on-accent) !important;
+  background: var(--ink) !important; color: var(--text-on-accent) !important;
   font-weight: 600 !important; border-radius: var(--radius-sm) !important; border: none !important;
 }
-.ui.primary.button:hover, .ui.blue.button:hover { background: var(--accent-hover) !important; }
+.ui.primary.button:hover, .ui.blue.button:hover { background: var(--ink-hover) !important; }
 .ui.positive.button, .ui.green.button { background: var(--success) !important; color: #fff !important; border-radius: var(--radius-sm) !important; font-weight: 600 !important; }
 .ui.negative.button, .ui.red.button { background: var(--danger) !important; color: #fff !important; border-radius: var(--radius-sm) !important; font-weight: 600 !important; }
 
@@ -1002,7 +1350,7 @@ body.muxi-app::before {
    22. SETTINGS TABS
    =================================================================== */
 .settings-tab { margin-top: 1rem !important; border-bottom: 1px solid var(--border-subtle) !important; }
-.settings-tab .item { color: var(--text-muted) !important; font-weight: 500 !important; padding: 0.75rem 1.1rem !important; border-radius: 8px 8px 0 0 !important; }
+.settings-tab .item { color: var(--text-muted) !important; font-weight: 500 !important; padding: 0.75rem 1.1rem !important; border-radius: var(--radius-md) var(--radius-md) 0 0 !important; }
 .settings-tab .active.item { color: var(--text-primary) !important; font-weight: 600 !important; border-color: var(--accent) !important; }
 .ui.tab.segment { border: none !important; box-shadow: none !important; padding: 1.25rem 0 !important; background: transparent !important; }
 
@@ -1021,6 +1369,7 @@ body.muxi-app::before {
 .muxi-footer a { color: var(--text-secondary); text-decoration: none; }
 .muxi-footer a:hover { color: var(--text-primary); }
 .custom-footer { font-size: 0.875rem; line-height: 1.6; color: var(--text-muted); }
+.muxi-footer-brand { font-size: inherit; letter-spacing: 0.06em; }
 
 /* ===================================================================
    25. ANIMATION
@@ -1038,6 +1387,16 @@ body.muxi-app::before {
 .muxi-animate-in > *:nth-child(4) { animation-delay: 180ms; }
 .muxi-animate-in > *:nth-child(5) { animation-delay: 240ms; }
 .muxi-animate-in > *:nth-child(n+6) { animation-delay: 300ms; }
+
+.muxi-stagger-in > * {
+  animation: muxi-card-enter 420ms var(--ease-out) both;
+}
+.muxi-stagger-in > *:nth-child(1) { animation-delay: 0ms; }
+.muxi-stagger-in > *:nth-child(2) { animation-delay: 45ms; }
+.muxi-stagger-in > *:nth-child(3) { animation-delay: 90ms; }
+.muxi-stagger-in > *:nth-child(4) { animation-delay: 135ms; }
+.muxi-stagger-in > *:nth-child(5) { animation-delay: 180ms; }
+.muxi-stagger-in > *:nth-child(n+6) { animation-delay: 225ms; }
 
 /* Skeleton */
 @keyframes muxi-shimmer {
@@ -1069,15 +1428,15 @@ body.muxi-app::before {
     padding: calc(var(--header-height) + 1.25rem) 1rem 1.25rem;
   }
   .muxi-auth-shell { grid-template-columns: 1fr; min-height: auto; }
+  .muxi-auth-shell--centered { padding: 2rem 1.25rem 1.75rem; max-width: 100%; border: none; border-radius: 0; }
   .muxi-auth-brand { padding: 2rem 1.5rem; }
   .muxi-auth-form { padding: 2rem 1.5rem; }
-  .muxi-home-hero { grid-template-columns: 1fr; }
-  .muxi-home-hero-stats { grid-template-columns: 1fr 1fr; }
+  .muxi-home-loading-grid { grid-template-columns: 1fr 1fr; }
   .muxi-channel-grid { grid-template-columns: 1fr; }
   .muxi-drawer { width: 100vw; }
 }
 @media screen and (max-width: 480px) {
-  .muxi-home-hero-stats { grid-template-columns: 1fr; }
+  .muxi-home-loading-grid { grid-template-columns: 1fr; }
 }
 
 /* ===================================================================
@@ -1109,16 +1468,16 @@ body.muxi-app::before {
   outline-offset: 2px;
 }
 .muxi-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.muxi-btn--primary { background: var(--accent); color: var(--text-on-accent); }
-.muxi-btn--primary:hover:not(:disabled) { background: var(--accent-hover); }
+.muxi-btn--primary { background: var(--ink); color: var(--text-on-accent); }
+.muxi-btn--primary:hover:not(:disabled) { background: var(--ink-hover); }
 .muxi-btn--secondary { background: var(--bg-card); color: var(--text-primary); border-color: var(--border-subtle); }
 .muxi-btn--secondary:hover:not(:disabled) { background: var(--bg-card-hover); border-color: var(--border-default); }
 .muxi-btn--ghost { background: transparent; color: var(--text-secondary); }
 .muxi-btn--ghost:hover:not(:disabled) { background: var(--bg-card); color: var(--text-primary); }
 .muxi-btn--danger { background: var(--danger); color: #fff; }
 .muxi-btn--danger:hover:not(:disabled) { opacity: 0.9; }
-.muxi-btn--accent { background: var(--accent); color: var(--text-on-accent); }
-.muxi-btn--accent:hover:not(:disabled) { background: var(--accent-hover); }
+.muxi-btn--accent { background: var(--ink); color: var(--text-on-accent); }
+.muxi-btn--accent:hover:not(:disabled) { background: var(--ink-hover); }
 .muxi-btn--sm { padding: 0.375rem 0.75rem; font-size: 0.8125rem; }
 .muxi-btn--lg { padding: 0.6875rem 1.25rem; font-size: 1rem; }
 .muxi-btn--loading { position: relative; color: transparent !important; pointer-events: none; }
@@ -1218,13 +1577,21 @@ body.muxi-app::before {
 
 /* Page header (feat-04 preview) */
 .muxi-page-header {
-  display: flex; align-items: flex-start; justify-content: space-between;
-  gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: var(--space-4); margin-bottom: var(--space-5);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
 }
 .muxi-page-header-title {
-  font-family: var(--font-display); font-size: 1.5rem; font-weight: 700;
-  letter-spacing: -0.02em; color: var(--text-primary); margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.5vw, 1.875rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin: 0;
   text-wrap: balance;
+  line-height: 1.15;
 }
 .muxi-page-header-desc { font-size: 0.875rem; color: var(--text-muted); margin: 0.25rem 0 0; }
 .muxi-page-header-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
@@ -1251,7 +1618,7 @@ body.muxi-app::before {
 }
 .muxi-sidebar-cmd-trigger kbd {
   font-family: var(--font-mono); font-size: 0.6875rem; padding: 0.125rem 0.375rem;
-  border: 1px solid var(--border-subtle); border-radius: 4px; background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-elevated);
   color: var(--text-muted);
 }
 .muxi-mobile-cmd-btn {
@@ -1266,14 +1633,17 @@ body.muxi-app::before {
 /* Command palette */
 .muxi-cmd-overlay {
   position: fixed; inset: 0; z-index: 2000;
-  background: rgba(15,23,42,0.35); backdrop-filter: blur(4px);
+  background: rgba(28, 25, 23, 0.32);
+  backdrop-filter: blur(6px);
   display: flex; align-items: flex-start; justify-content: center;
   padding: 12vh 1rem 1rem; overscroll-behavior: contain;
 }
 .muxi-cmd {
   width: 100%; max-width: 520px;
-  background: var(--bg-elevated); border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl); box-shadow: var(--shadow-lg);
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
 }
 .muxi-cmd-input-wrap {
@@ -1288,7 +1658,7 @@ body.muxi-app::before {
 .muxi-cmd-input::placeholder { color: var(--text-muted); }
 .muxi-cmd-kbd {
   font-family: var(--font-mono); font-size: 0.6875rem; padding: 0.125rem 0.375rem;
-  border: 1px solid var(--border-subtle); border-radius: 4px; color: var(--text-muted);
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--text-muted);
 }
 .muxi-cmd-list {
   list-style: none; margin: 0; padding: 0.375rem;
@@ -1313,5 +1683,144 @@ body.muxi-app::before {
 }
 .muxi-cmd-footer kbd {
   font-family: var(--font-mono); font-size: 0.625rem; padding: 0.0625rem 0.3125rem;
-  border: 1px solid var(--border-subtle); border-radius: 3px; margin-right: 0.25rem;
+  border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); margin-right: 0.25rem;
+}
+
+/* ===================================================================
+   29. STUDIO INK — Home & editorial surfaces (v4)
+   =================================================================== */
+.muxi-home--studio { max-width: 42rem; }
+
+.muxi-studio-hero {
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.muxi-studio-kicker {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.muxi-studio-hero h1 {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.5vw, 2.75rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  color: var(--text-primary);
+}
+.muxi-studio-lead {
+  margin: 0 0 var(--space-3);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  max-width: 38ch;
+}
+.muxi-studio-hint {
+  margin: 0 0 var(--space-4);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+.muxi-studio-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.muxi-studio-panel {
+  margin-bottom: var(--space-5);
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.muxi-studio-panel--last { border-bottom: none; margin-bottom: 0; }
+.muxi-studio-panel-title {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.muxi-studio-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4) var(--space-5);
+  margin: 0;
+}
+.muxi-studio-stat { min-width: 0; }
+.muxi-studio-stat dt {
+  margin: 0 0 var(--space-1);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.muxi-studio-stat dd {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.muxi-studio-link-list,
+.muxi-studio-config-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.muxi-studio-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+.muxi-studio-link-list li:last-child .muxi-studio-link { border-bottom: none; }
+.muxi-studio-link:hover { color: var(--accent); }
+.muxi-studio-link .icon:first-child {
+  width: 1rem; height: 1rem; min-width: 1rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  margin: 0 !important; color: var(--text-muted); font-size: 0.875rem !important;
+}
+.muxi-studio-link:hover .icon:first-child { color: var(--accent); }
+.muxi-studio-link-chevron {
+  margin-left: auto !important;
+  opacity: 0.35;
+  font-size: 0.75rem !important;
+}
+
+.muxi-studio-config-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 0.625rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+.muxi-studio-config-list li:last-child { border-bottom: none; }
+
+.muxi-home-loading--studio { max-width: 42rem; }
+.muxi-home-loading-hero { height: 200px; border-radius: var(--radius-md); margin-bottom: var(--space-4); }
+.muxi-home-loading-panel { height: 160px; border-radius: var(--radius-md); }
+
+@media screen and (max-width: 768px) {
+  .muxi-studio-stats { grid-template-columns: 1fr; }
+  .muxi-main {
+    padding: calc(var(--header-height) + 1.5rem) 1.25rem 1.5rem;
+  }
 }

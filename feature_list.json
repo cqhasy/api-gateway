@@ -1,7 +1,15 @@
 {
   "project": "MUXI API Frontend Redesign v2",
-  "designDirection": "Clear Horizon — light airy SaaS console",
-  "activeFeature": "feat-07",
+  "designDirection": "Studio Ink — Claude warmth + Cursor precision (v4 redesign)",
+  "activeFeature": "v4-04",
+  "redesignV4": {
+    "plan": "docs/redesign-v4-plan.md",
+    "v4-01": "Foundation — tokens, typography, flat cards, ink buttons",
+    "v4-02": "App Shell — sidebar, mobile, command palette",
+    "v4-03": "Core pages — home editorial, auth",
+    "v4-04": "Data pages — dashboard, lists",
+    "v4-05": "Polish — semantic overrides, a11y"
+  },
   "features": [
     {
       "id": "feat-01",
@@ -14,10 +22,10 @@
     {
       "id": "feat-02",
       "name": "Design Tokens v2",
-      "description": "Signal Control → Clear Horizon 浅色 tokens、color-scheme light",
+      "description": "Platform Console tokens、MetricCard、design-system.md",
       "dependencies": ["feat-01"],
       "status": "done",
-      "evidence": "muxi-theme.css v2 tokens, index.html Syne font"
+      "evidence": "muxi-theme.css v3 tokens, docs/design-system.md, MetricCard/MetricGrid"
     },
     {
       "id": "feat-03",
@@ -54,96 +62,128 @@
     {
       "id": "feat-07",
       "name": "Home 落地页",
-      "description": "Hero、状态卡片、CTA、移除 inline styles",
+      "description": "MetricGrid KPI 优先、紧凑 intro、快捷入口",
       "dependencies": ["feat-04"],
-      "status": "not-started",
-      "evidence": ""
+      "status": "done",
+      "evidence": "Home/index.js MetricCard grid + intro + quick-links; npm run build exit 0"
     },
     {
       "id": "feat-08",
       "name": "Dashboard 数据可视化",
-      "description": "图表主题、Intl 格式化、summary cards",
+      "description": "MetricCard summary + sparkline、Intl 格式化",
       "dependencies": ["feat-03"],
-      "status": "not-started",
-      "evidence": ""
+      "status": "done",
+      "evidence": "MetricGrid summary cards, PageHeader, Intl format; npm run build exit 0"
     },
     {
       "id": "feat-09",
-      "name": "Token 列表 + Drawer",
-      "description": "复制 key、状态切换、Drawer 详情",
-      "dependencies": ["feat-04"],
-      "status": "not-started",
-      "evidence": ""
+      "name": "Design — 表面层次",
+      "description": "背景 #f5f7fa、卡片 #fff、--shadow-card 双层轻阴影；解决「太白/像纸片」",
+      "dependencies": ["feat-02"],
+      "status": "done",
+      "evidence": "--bg-root #f5f7fa; --shadow-card layered; cards/metric/stat/intro/chart float; muxi-main bg-root; npm run build exit 0"
     },
     {
       "id": "feat-10",
-      "name": "Token 编辑表单",
-      "description": "模型选择、额度限制、muxi 表单",
+      "name": "Design — KPI 视觉节奏",
+      "description": "Home/Dashboard 主次 MetricCard（primary 大卡 + secondary 小卡）；解决「哪里都重要」",
       "dependencies": ["feat-09"],
-      "status": "not-started",
-      "evidence": ""
+      "status": "done",
+      "evidence": "MetricCard size primary/secondary; Grid layout rhythm + emphasis-first; Home + Dashboard; npm run build exit 0"
     },
     {
       "id": "feat-11",
-      "name": "Channel 卡片网格 + Drawer",
-      "description": "统一 Drawer pattern、状态脉冲",
-      "dependencies": ["feat-04"],
-      "status": "not-started",
-      "evidence": ""
+      "name": "Design — 圆角统一",
+      "description": "侧栏选中/卡片/按钮全站 --radius-md 8px 基准",
+      "dependencies": ["feat-10"],
+      "status": "done",
+      "evidence": "--radius-ui 8px; sm/md/lg/xl aliased; hardcoded 4/6px removed; quick-link/sidebar/btn unified; npm run build exit 0"
     },
     {
       "id": "feat-12",
-      "name": "Channel 编辑多步表单",
-      "description": "类型选择 wizard、muxi 表单",
+      "name": "Design — MUXI 品牌识别",
+      "description": "品牌色扩展、签名图形、Logo 区强化；遮住 Logo 仍可辨认",
       "dependencies": ["feat-11"],
-      "status": "not-started",
-      "evidence": ""
+      "status": "done",
+      "evidence": "BrandMark/BrandLockup; --brand gold tokens; sidebar stripe; auth gold panel; primary btn gold; npm run build exit 0"
     },
     {
       "id": "feat-13",
-      "name": "Log 可观测性视图",
-      "description": "筛选 URL sync、stat 面板",
-      "dependencies": ["feat-04"],
+      "name": "Token 列表 + Drawer",
+      "description": "复制 key、状态切换、Drawer 详情",
+      "dependencies": ["feat-12"],
       "status": "not-started",
       "evidence": ""
     },
     {
       "id": "feat-14",
-      "name": "User 管理",
-      "description": "表格 + 角色 badge",
-      "dependencies": ["feat-04"],
+      "name": "Token 编辑表单",
+      "description": "模型选择、额度限制、muxi 表单",
+      "dependencies": ["feat-13"],
       "status": "not-started",
       "evidence": ""
     },
     {
       "id": "feat-15",
-      "name": "Redemption + TopUp",
-      "description": "充值流程 UX",
-      "dependencies": ["feat-04"],
+      "name": "Channel 卡片网格 + Drawer",
+      "description": "统一 Drawer pattern、状态脉冲",
+      "dependencies": ["feat-12"],
       "status": "not-started",
       "evidence": ""
     },
     {
       "id": "feat-16",
-      "name": "Setting 分区 Tab",
-      "description": "System/Personal/Operation/Other",
-      "dependencies": ["feat-04"],
+      "name": "Channel 编辑多步表单",
+      "description": "类型选择 wizard、muxi 表单",
+      "dependencies": ["feat-15"],
       "status": "not-started",
       "evidence": ""
     },
     {
       "id": "feat-17",
-      "name": "Semantic UI 剥离",
-      "description": "移除 semantic-ui-css 依赖",
-      "dependencies": ["feat-06", "feat-07", "feat-08", "feat-09", "feat-10", "feat-11", "feat-12", "feat-13", "feat-14", "feat-15", "feat-16"],
+      "name": "Log 可观测性视图",
+      "description": "筛选 URL sync、stat 面板",
+      "dependencies": ["feat-12"],
       "status": "not-started",
       "evidence": ""
     },
     {
       "id": "feat-18",
+      "name": "User 管理",
+      "description": "表格 + 角色 badge",
+      "dependencies": ["feat-12"],
+      "status": "not-started",
+      "evidence": ""
+    },
+    {
+      "id": "feat-19",
+      "name": "Redemption + TopUp",
+      "description": "充值流程 UX",
+      "dependencies": ["feat-12"],
+      "status": "not-started",
+      "evidence": ""
+    },
+    {
+      "id": "feat-20",
+      "name": "Setting 分区 Tab",
+      "description": "System/Personal/Operation/Other",
+      "dependencies": ["feat-12"],
+      "status": "not-started",
+      "evidence": ""
+    },
+    {
+      "id": "feat-21",
+      "name": "Semantic UI 剥离",
+      "description": "移除 semantic-ui-css 依赖",
+      "dependencies": ["feat-13", "feat-14", "feat-15", "feat-16", "feat-17", "feat-18", "feat-19", "feat-20"],
+      "status": "not-started",
+      "evidence": ""
+    },
+    {
+      "id": "feat-22",
       "name": "a11y + Guidelines 合规审计",
       "description": "全站 Vercel Web Interface Guidelines pass",
-      "dependencies": ["feat-17"],
+      "dependencies": ["feat-21"],
       "status": "not-started",
       "evidence": ""
     }

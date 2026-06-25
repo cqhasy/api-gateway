@@ -35,7 +35,7 @@ const Footer = () => {
           <div className='custom-footer' dangerouslySetInnerHTML={{ __html: footer }} />
         ) : (
           <div className='custom-footer'>
-            <strong style={{ color: 'var(--muxi-ink)', letterSpacing: '0.04em' }}>{systemName}</strong>
+            <strong className='muxi-brand-word muxi-footer-brand'>{systemName}</strong>
             {' · '}
             {process.env.REACT_APP_VERSION}
             {' · '}

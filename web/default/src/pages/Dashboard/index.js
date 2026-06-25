@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
-import {useTranslation} from 'react-i18next';
-import {Card, Grid} from 'semantic-ui-react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Card } from 'semantic-ui-react';
 import {
   Bar,
   BarChart,
@@ -13,40 +13,39 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import axios from 'axios';
+import { API } from '../../helpers';
+import { PageHeader, MetricCard, MetricGrid } from '../../components/muxi';
 import './Dashboard.css';
 
-// 在 Dashboard 组件内添加自定义配置
-const chartConfig = {
-  lineChart: {
-    style: {
-      background: 'var(--muxi-bg-elevated)',
-      borderRadius: 'var(--muxi-radius-sm)',
-    },
-    line: {
-      strokeWidth: 2,
-      dot: false,
-      activeDot: { r: 4 },
-    },
-    grid: {
-      vertical: false,
-      horizontal: true,
-      opacity: 0.1,
-    },
-  },
-  colors: {
-    requests: '#2563eb',
-    quota: '#7c3aed',
-    tokens: '#16a34a',
-  },
-  barColors: [
-    '#2563eb','#7c3aed','#16a34a','#d97706','#dc2626',
-    '#0891b2','#4f46e5','#059669','#ea580c','#db2777',
-  ],
+const CHART_COLORS = {
+  requests: '#2563eb',
+  quota: '#7c3aed',
+  tokens: '#16a34a',
+};
+
+const BAR_COLORS = [
+  '#2563eb', '#7c3aed', '#16a34a', '#d97706', '#dc2626',
+  '#0891b2', '#4f46e5', '#059669', '#ea580c', '#db2777',
+];
+
+const CHART_TOOLTIP_STYLE = {
+  background: 'var(--bg-tooltip)',
+  border: '1px solid var(--border-default)',
+  borderRadius: 'var(--radius-sm)',
+  boxShadow: 'var(--shadow-md)',
+  color: 'var(--text-primary)',
+  fontSize: '0.8125rem',
+};
+
+const formatLocalDateKey = (date) => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 };
 
 const Dashboard = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [data, setData] = useState([]);
   const [summaryData, setSummaryData] = useState({
     todayRequests: 0,
@@ -54,388 +53,249 @@ const Dashboard = () => {
     todayTokens: 0,
   });
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
+  const locale = i18n.language?.startsWith('zh') ? 'zh-CN' : 'en-US';
 
-  const fetchDashboardData = async () => {
-    try {
-      const response = await axios.get('/api/user/dashboard');
-      if (response.data.success) {
-        const dashboardData = response.data.data || [];
-        setData(dashboardData);
-        calculateSummary(dashboardData);
+  const numberFmt = useMemo(
+    () => new Intl.NumberFormat(locale),
+    [locale]
+  );
+
+  const quotaFmt = useMemo(
+    () =>
+      new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 6,
+      }),
+    [locale]
+  );
+
+  const calculateSummary = useCallback(
+    (dashboardData) => {
+      if (!Array.isArray(dashboardData) || dashboardData.length === 0) {
+        setSummaryData({ todayRequests: 0, todayQuota: 0, todayTokens: 0 });
+        return;
       }
-    } catch (error) {
-      console.error('Failed to fetch dashboard data:', error);
-      setData([]);
-      calculateSummary([]);
-    }
-  };
 
-  const calculateSummary = (dashboardData) => {
-    if (!Array.isArray(dashboardData) || dashboardData.length === 0) {
+      const today = formatLocalDateKey(new Date());
+      const todayData = dashboardData.filter((item) => item.Day === today);
+
       setSummaryData({
-        todayRequests: 0,
-        todayQuota: 0,
-        todayTokens: 0,
+        todayRequests: todayData.reduce((sum, item) => sum + item.RequestCount, 0),
+        todayQuota: todayData.reduce((sum, item) => sum + item.Quota, 0) / 1000000,
+        todayTokens: todayData.reduce(
+          (sum, item) => sum + item.PromptTokens + item.CompletionTokens,
+          0
+        ),
       });
-      return;
-    }
+    },
+    []
+  );
 
-    const today = new Date().toISOString().split('T')[0];
-    const todayData = dashboardData.filter((item) => item.Day === today);
-
-    const summary = {
-      todayRequests: todayData.reduce(
-        (sum, item) => sum + item.RequestCount,
-        0
-      ),
-      todayQuota:
-        todayData.reduce((sum, item) => sum + item.Quota, 0) / 1000000,
-      todayTokens: todayData.reduce(
-        (sum, item) => sum + item.PromptTokens + item.CompletionTokens,
-        0
-      ),
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const response = await API.get('/api/user/dashboard');
+        if (response.data.success) {
+          const dashboardData = response.data.data || [];
+          setData(dashboardData);
+          calculateSummary(dashboardData);
+        }
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+        setData([]);
+        calculateSummary([]);
+      }
     };
+    fetchDashboardData();
+  }, [calculateSummary]);
 
-    setSummaryData(summary);
-  };
-
-  // 处理数据以供折线图使用，补充缺失的日期
-  const processTimeSeriesData = () => {
-    const dailyData = {};
-
-    // 获取日期范围
+  const getDateRange = useCallback(() => {
     const dates = data.map((item) => item.Day);
-    const maxDate = new Date(); // 总是使用今天作为最后一天
+    const maxDate = new Date();
     let minDate =
       dates.length > 0
         ? new Date(Math.min(...dates.map((d) => new Date(d))))
         : new Date();
 
-    // 确保至少显示7天的数据
     const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6); // -6是因为包含今天
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
     if (minDate > sevenDaysAgo) {
       minDate = sevenDaysAgo;
     }
 
-    // 生成所有日期
+    return { minDate, maxDate };
+  }, [data]);
+
+  const timeSeriesData = useMemo(() => {
+    const dailyData = {};
+    const { minDate, maxDate } = getDateRange();
+
     for (let d = new Date(minDate); d <= maxDate; d.setDate(d.getDate() + 1)) {
-      const dateStr = d.toISOString().split('T')[0];
-      dailyData[dateStr] = {
-        date: dateStr,
-        requests: 0,
-        quota: 0,
-        tokens: 0,
-      };
+      const dateStr = formatLocalDateKey(d);
+      dailyData[dateStr] = { date: dateStr, requests: 0, quota: 0, tokens: 0 };
     }
 
-    // 填充实际数据
     data.forEach((item) => {
+      if (!dailyData[item.Day]) {
+        dailyData[item.Day] = { date: item.Day, requests: 0, quota: 0, tokens: 0 };
+      }
       dailyData[item.Day].requests += item.RequestCount;
       dailyData[item.Day].quota += item.Quota / 1000000;
       dailyData[item.Day].tokens += item.PromptTokens + item.CompletionTokens;
     });
 
-    return Object.values(dailyData).sort((a, b) =>
-      a.date.localeCompare(b.date)
-    );
-  };
+    return Object.values(dailyData).sort((a, b) => a.date.localeCompare(b.date));
+  }, [data, getDateRange]);
 
-  // 处理数据以供堆叠柱状图使用
-  const processModelData = () => {
+  const modelData = useMemo(() => {
     const timeData = {};
+    const { minDate, maxDate } = getDateRange();
+    const models = [...new Set(data.map((item) => item.ModelName))];
 
-    // 获取日期范围
-    const dates = data.map((item) => item.Day);
-    const maxDate = new Date(); // 总是使用今天作为最后一天
-    let minDate =
-      dates.length > 0
-        ? new Date(Math.min(...dates.map((d) => new Date(d))))
-        : new Date();
-
-    // 确保至少显示7天的数据
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6); // -6是因为包含今天
-    if (minDate > sevenDaysAgo) {
-      minDate = sevenDaysAgo;
-    }
-
-    // 生成所有日期
     for (let d = new Date(minDate); d <= maxDate; d.setDate(d.getDate() + 1)) {
-      const dateStr = d.toISOString().split('T')[0];
-      timeData[dateStr] = {
-        date: dateStr,
-      };
-
-      // 初始化所有模型的数据为0
-      const models = [...new Set(data.map((item) => item.ModelName))];
+      const dateStr = formatLocalDateKey(d);
+      timeData[dateStr] = { date: dateStr };
       models.forEach((model) => {
         timeData[dateStr][model] = 0;
       });
     }
 
-    // 填充实际数据
     data.forEach((item) => {
-      timeData[item.Day][item.ModelName] =
-        item.PromptTokens + item.CompletionTokens;
+      if (timeData[item.Day]) {
+        timeData[item.Day][item.ModelName] =
+          item.PromptTokens + item.CompletionTokens;
+      }
     });
 
     return Object.values(timeData).sort((a, b) => a.date.localeCompare(b.date));
-  };
+  }, [data, getDateRange]);
 
-  // 获取所有唯一的模型名称
-  const getUniqueModels = () => {
-    return [...new Set(data.map((item) => item.ModelName))];
-  };
+  const models = useMemo(
+    () => [...new Set(data.map((item) => item.ModelName))],
+    [data]
+  );
 
-  const timeSeriesData = processTimeSeriesData();
-  const modelData = processModelData();
-  const models = getUniqueModels();
+  const formatDate = useCallback(
+    (dateStr) => {
+      const date = new Date(dateStr);
+      return new Intl.DateTimeFormat(locale, { month: 'numeric', day: 'numeric' }).format(date);
+    },
+    [locale]
+  );
 
-  // 生成随机颜色
-  const getRandomColor = (index) => {
-    return chartConfig.barColors[index % chartConfig.barColors.length];
-  };
-
-  // 添加一个日期格式化函数
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('zh-CN', {
-      month: 'numeric',
-      day: 'numeric',
-    });
-  };
-
-  // 修改所有 XAxis 配置
   const xAxisConfig = {
     dataKey: 'date',
     axisLine: false,
     tickLine: false,
-    tick: {
-      fontSize: 12,
-      fill: '#71717a',
-      textAnchor: 'middle', // 文本居中对齐
-    },
+    tick: { fontSize: 12, fill: 'var(--text-muted)', textAnchor: 'middle' },
     tickFormatter: formatDate,
     interval: 0,
     minTickGap: 5,
-    padding: { left: 30, right: 30 }, // 增加两侧的内边距，确保首尾标签完整显示
+    padding: { left: 30, right: 30 },
   };
 
+  const summaryCards = [
+    {
+      title: t('dashboard.charts.requests.title'),
+      value: numberFmt.format(summaryData.todayRequests),
+      dataKey: 'requests',
+      color: CHART_COLORS.requests,
+      tooltip: t('dashboard.charts.requests.tooltip'),
+      formatter: (value) => [numberFmt.format(value), t('dashboard.charts.requests.tooltip')],
+    },
+    {
+      title: t('dashboard.charts.quota.title'),
+      value: quotaFmt.format(summaryData.todayQuota),
+      dataKey: 'quota',
+      color: CHART_COLORS.quota,
+      tooltip: t('dashboard.charts.quota.tooltip'),
+      formatter: (value) => [quotaFmt.format(value), t('dashboard.charts.quota.tooltip')],
+    },
+    {
+      title: t('dashboard.charts.tokens.title'),
+      value: numberFmt.format(summaryData.todayTokens),
+      dataKey: 'tokens',
+      color: CHART_COLORS.tokens,
+      tooltip: t('dashboard.charts.tokens.tooltip'),
+      formatter: (value) => [numberFmt.format(value), t('dashboard.charts.tokens.tooltip')],
+    },
+  ];
+
   return (
-    <div className='dashboard-container'>
-      {/* 三个并排的折线图 */}
-      <Grid columns={3} stackable className='charts-grid'>
-        <Grid.Column>
-          <Card fluid className='chart-card'>
-            <Card.Content>
-              <Card.Header>
-                {t('dashboard.charts.requests.title')}
-                {/* <span className='stat-value'>{summaryData.todayRequests}</span> */}
-              </Card.Header>
-              <div className='chart-container'>
-                <ResponsiveContainer
-                  width='100%'
-                  height={120}
-                  margin={{ left: 10, right: 10 }} // 调整容器边距
-                >
-                  <LineChart data={timeSeriesData}>
-                    <CartesianGrid
-                      strokeDasharray='3 3'
-                      vertical={chartConfig.lineChart.grid.vertical}
-                      horizontal={chartConfig.lineChart.grid.horizontal}
-                      opacity={chartConfig.lineChart.grid.opacity}
-                    />
-                    <XAxis {...xAxisConfig} />
-                    <YAxis hide={true} />
-                    <Tooltip
-                      contentStyle={{
-                        background: '#18181b',
-                        border: '1px solid #27272a',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
-                      }}
-                      formatter={(value) => [
-                        value,
-                        t('dashboard.charts.requests.tooltip'),
-                      ]}
-                      labelFormatter={(label) =>
-                        `${t(
-                          'dashboard.statistics.tooltip.date'
-                        )}: ${formatDate(label)}`
-                      }
-                    />
-                    <Line
-                      type='monotone'
-                      dataKey='requests'
-                      stroke={chartConfig.colors.requests}
-                      strokeWidth={chartConfig.lineChart.line.strokeWidth}
-                      dot={chartConfig.lineChart.line.dot}
-                      activeDot={chartConfig.lineChart.line.activeDot}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </Card.Content>
-          </Card>
-        </Grid.Column>
+    <div className='muxi-animate-in muxi-dashboard'>
+      <PageHeader
+        title={t('header.dashboard')}
+        description={t('dashboard.subtitle')}
+      />
 
-        <Grid.Column>
-          <Card fluid className='chart-card'>
-            <Card.Content>
-              <Card.Header>
-                {t('dashboard.charts.quota.title')}
-                {/* <span className='stat-value'>
-                  ${summaryData.todayQuota.toFixed(3)}
-                </span> */}
-              </Card.Header>
-              <div className='chart-container'>
-                <ResponsiveContainer
-                  width='100%'
-                  height={120}
-                  margin={{ left: 10, right: 10 }} // 调整容器边距
-                >
-                  <LineChart data={timeSeriesData}>
-                    <CartesianGrid
-                      strokeDasharray='3 3'
-                      vertical={chartConfig.lineChart.grid.vertical}
-                      horizontal={chartConfig.lineChart.grid.horizontal}
-                      opacity={chartConfig.lineChart.grid.opacity}
-                    />
-                    <XAxis {...xAxisConfig} />
-                    <YAxis hide={true} />
-                    <Tooltip
-                      contentStyle={{
-                        background: '#18181b',
-                        border: '1px solid #27272a',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
-                      }}
-                      formatter={(value) => [
-                        value.toFixed(6),
-                        t('dashboard.charts.quota.tooltip'),
-                      ]}
-                      labelFormatter={(label) =>
-                        `${t(
-                          'dashboard.statistics.tooltip.date'
-                        )}: ${formatDate(label)}`
-                      }
-                    />
-                    <Line
-                      type='monotone'
-                      dataKey='quota'
-                      stroke={chartConfig.colors.quota}
-                      strokeWidth={chartConfig.lineChart.line.strokeWidth}
-                      dot={chartConfig.lineChart.line.dot}
-                      activeDot={chartConfig.lineChart.line.activeDot}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </Card.Content>
-          </Card>
-        </Grid.Column>
+      <MetricGrid layout='emphasis-first' className='muxi-stagger-in'>
+        {summaryCards.map((card, index) => (
+          <MetricCard
+            key={card.dataKey}
+            label={card.title}
+            value={card.value}
+            sublabel={t('dashboard.summary.today')}
+            size={index === 0 ? 'primary' : 'secondary'}
+            highlight={index === 0}
+            variant={index === 0 ? 'accent' : undefined}
+          >
+            <div className='muxi-chart-sparkline'>
+              <ResponsiveContainer width='100%' height={index === 0 ? 112 : 88} margin={{ left: 0, right: 0 }}>
+                <LineChart data={timeSeriesData}>
+                  <CartesianGrid strokeDasharray='3 3' vertical={false} horizontal opacity={0.12} />
+                  <XAxis {...xAxisConfig} />
+                  <YAxis hide />
+                  <Tooltip
+                    contentStyle={CHART_TOOLTIP_STYLE}
+                    formatter={card.formatter}
+                    labelFormatter={(label) =>
+                      `${t('dashboard.statistics.tooltip.date')}: ${formatDate(label)}`
+                    }
+                  />
+                  <Line
+                    type='monotone'
+                    dataKey={card.dataKey}
+                    stroke={card.color}
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 4 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </MetricCard>
+        ))}
+      </MetricGrid>
 
-        <Grid.Column>
-          <Card fluid className='chart-card'>
-            <Card.Content>
-              <Card.Header>
-                {t('dashboard.charts.tokens.title')}
-                {/* <span className='stat-value'>{summaryData.todayTokens}</span> */}
-              </Card.Header>
-              <div className='chart-container'>
-                <ResponsiveContainer
-                  width='100%'
-                  height={120}
-                  margin={{ left: 10, right: 10 }} // 调整容器边距
-                >
-                  <LineChart data={timeSeriesData}>
-                    <CartesianGrid
-                      strokeDasharray='3 3'
-                      vertical={chartConfig.lineChart.grid.vertical}
-                      horizontal={chartConfig.lineChart.grid.horizontal}
-                      opacity={chartConfig.lineChart.grid.opacity}
-                    />
-                    <XAxis {...xAxisConfig} />
-                    <YAxis hide={true} />
-                    <Tooltip
-                      contentStyle={{
-                        background: '#18181b',
-                        border: '1px solid #27272a',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 16px rgba(0,0,0,0.5)',
-                      }}
-                      formatter={(value) => [
-                        value,
-                        t('dashboard.charts.tokens.tooltip'),
-                      ]}
-                      labelFormatter={(label) =>
-                        `${t(
-                          'dashboard.statistics.tooltip.date'
-                        )}: ${formatDate(label)}`
-                      }
-                    />
-                    <Line
-                      type='monotone'
-                      dataKey='tokens'
-                      stroke={chartConfig.colors.tokens}
-                      strokeWidth={chartConfig.lineChart.line.strokeWidth}
-                      dot={chartConfig.lineChart.line.dot}
-                      activeDot={chartConfig.lineChart.line.activeDot}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </Card.Content>
-          </Card>
-        </Grid.Column>
-      </Grid>
-
-      {/* 模型使用统计 */}
-      <Card fluid className='chart-card'>
+      <Card fluid className='chart-card muxi-chart-panel'>
         <Card.Content>
           <Card.Header>{t('dashboard.statistics.title')}</Card.Header>
           <div className='chart-container'>
             <ResponsiveContainer width='100%' height={300}>
               <BarChart data={modelData}>
-                <CartesianGrid
-                  strokeDasharray='3 3'
-                  vertical={false}
-                  opacity={0.1}
-                />
+                <CartesianGrid strokeDasharray='3 3' vertical={false} opacity={0.15} />
                 <XAxis {...xAxisConfig} />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 12, fill: '#8F8D88' }}
+                  tick={{ fontSize: 12, fill: 'var(--text-muted)' }}
                 />
                 <Tooltip
-                  contentStyle={{
-                    background: 'var(--muxi-bg-elevated)',
-                    border: '1px solid var(--muxi-border)',
-                    borderRadius: 'var(--muxi-radius-sm)',
-                    boxShadow: 'var(--muxi-shadow-md)',
-                  }}
+                  contentStyle={CHART_TOOLTIP_STYLE}
+                  formatter={(value) => [numberFmt.format(value), t('dashboard.statistics.tooltip.value')]}
                   labelFormatter={(label) =>
-                    `${t('dashboard.statistics.tooltip.date')}: ${formatDate(
-                      label
-                    )}`
+                    `${t('dashboard.statistics.tooltip.date')}: ${formatDate(label)}`
                   }
                 />
-                <Legend
-                  wrapperStyle={{
-                    paddingTop: '20px',
-                  }}
-                />
+                <Legend wrapperStyle={{ paddingTop: '20px' }} />
                 {models.map((model, index) => (
                   <Bar
                     key={model}
                     dataKey={model}
                     stackId='a'
-                    fill={getRandomColor(index)}
+                    fill={BAR_COLORS[index % BAR_COLORS.length]}
                     name={model}
                     radius={[4, 4, 0, 0]}
                   />

@@ -3,7 +3,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/User';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'semantic-ui-react';
-import { API, getLogo, getSystemName, isAdmin, showSuccess } from '../helpers';
+import { API, getSystemName, isAdmin, showSuccess } from '../helpers';
+import { BrandLockup } from './muxi';
 import { NAV_GROUPS } from '../constants/nav';
 
 const Sidebar = () => {
@@ -14,7 +15,6 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const systemName = getSystemName();
-  const logo = getLogo();
 
   useEffect(() => {
     setMobileOpen(false);
@@ -62,9 +62,8 @@ const Sidebar = () => {
         >
           <Icon name={mobileOpen ? 'close' : 'sidebar'} aria-hidden='true' />
         </button>
-        <Link to='/' className='muxi-mobile-brand'>
-          <img src={logo} alt='' width={24} height={24} />
-          <span>{systemName}</span>
+        <Link to='/' className='muxi-mobile-brand' aria-label={systemName}>
+          <BrandLockup markSize={22} className='muxi-brand-lockup--compact' />
         </Link>
         <button
           type='button'
@@ -85,9 +84,8 @@ const Sidebar = () => {
       )}
 
       <aside className={`muxi-sidebar${mobileOpen ? ' muxi-sidebar--open' : ''}`}>
-        <Link to='/' className='muxi-sidebar-brand muxi-sidebar-brand--desktop'>
-          <img src={logo} alt={`${systemName} logo`} width={30} height={30} />
-          <span>{systemName}</span>
+        <Link to='/' className='muxi-sidebar-brand muxi-sidebar-brand--desktop' aria-label={systemName}>
+          <BrandLockup />
         </Link>
 
         <button

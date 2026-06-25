@@ -429,6 +429,10 @@
     }
   },
   "dashboard": {
+    "subtitle": "查看 API 使用趋势与模型分布",
+    "summary": {
+      "today": "今日"
+    },
     "charts": {
       "requests": {
         "title": "模型请求趋势",
@@ -754,10 +758,15 @@
   },
   "home": {
     "welcome": {
-      "title": "欢迎使用 MUXI API",
+      "title": "欢迎使用 {{name}}",
       "description": "MUXI API 是一个 LLM API 接口管理和分发系统，可以帮助您更好地管理和使用各大厂商的 LLM API。",
-      "login_notice": "如需使用，请先登录或注册。"
+      "login_notice": "如需使用，请先登录或注册。",
+      "cta_token": "管理 API 令牌"
     },
+    "quick_links": {
+      "title": "快捷入口"
+    },
+    "custom_content_title": "首页内容",
     "system_status": {
       "title": "系统状况",
       "info": {
