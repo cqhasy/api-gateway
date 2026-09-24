@@ -1,0 +1,24 @@
+run:
+  timeout: 5m
+  tests: true
+  modules-download-mode: readonly
+
+linters:
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+
+issues:
+  exclude-dirs:
+    - web
+  exclude-rules:
+    - linters:
+        - gosimple
+      text: "S1023:"
+    - path: _test\.go
+      linters:
+        - errcheck

@@ -108,8 +108,7 @@ func GetTokenByIds(id int, userId int) (*Token, error) {
 		return nil, errors.New("id 或 userId 为空！")
 	}
 	token := Token{Id: id, UserId: userId}
-	var err error = nil
-	err = DB.First(&token, "id = ? and user_id = ?", id, userId).Error
+	err := DB.First(&token, "id = ? and user_id = ?", id, userId).Error
 	return &token, err
 }
 
@@ -118,22 +117,17 @@ func GetTokenById(id int) (*Token, error) {
 		return nil, errors.New("id 为空！")
 	}
 	token := Token{Id: id}
-	var err error = nil
-	err = DB.First(&token, "id = ?", id).Error
+	err := DB.First(&token, "id = ?", id).Error
 	return &token, err
 }
 
 func (t *Token) Insert() error {
-	var err error
-	err = DB.Create(t).Error
-	return err
+	return DB.Create(t).Error
 }
 
 // Update Make sure your token's fields is completed, because this will update non-zero values
 func (t *Token) Update() error {
-	var err error
-	err = DB.Model(t).Select("name", "status", "expired_time", "remain_quota", "unlimited_quota", "models", "subnet").Updates(t).Error
-	return err
+	return DB.Model(t).Select("name", "status", "expired_time", "remain_quota", "unlimited_quota", "models", "subnet").Updates(t).Error
 }
 
 func (t *Token) SelectUpdate() error {
@@ -142,9 +136,7 @@ func (t *Token) SelectUpdate() error {
 }
 
 func (t *Token) Delete() error {
-	var err error
-	err = DB.Delete(t).Error
-	return err
+	return DB.Delete(t).Error
 }
 
 func (t *Token) GetModels() string {
@@ -285,9 +277,11 @@ func PostConsumeTokenQuota(tokenId int, quota int64) (err error) {
 		return err
 	}
 	if quota > 0 {
-		err = DecreaseUserQuota(token.UserId, quota)
-	} else {
-		err = IncreaseUserQuota(token.UserId, -quota)
+		if err = DecreaseUserQuota(token.UserId, quota); err != nil {
+			return err
+		}
+	} else if err = IncreaseUserQuota(token.UserId, -quota); err != nil {
+		return err
 	}
 	if !token.UnlimitedQuota {
 		if quota > 0 {

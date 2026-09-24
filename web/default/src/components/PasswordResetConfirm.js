@@ -1,46 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Button,
-  Form,
-  Grid,
-  Header,
-  Image,
-  Card,
-  Message,
-} from 'semantic-ui-react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { API, copy, getLogo, showError, showNotice } from '../helpers';
-import { useSearchParams } from 'react-router-dom';
+import { API, copy, showError, showNotice } from '../helpers';
+import { AuthShell, Button, Input } from './muxi';
 
 const PasswordResetConfirm = () => {
   const { t } = useTranslation();
-  const [inputs, setInputs] = useState({
-    email: '',
-    token: '',
-  });
+  const [inputs, setInputs] = useState({ email: '', token: '' });
   const { email, token } = inputs;
   const [loading, setLoading] = useState(false);
   const [disableButton, setDisableButton] = useState(false);
   const [newPassword, setNewPassword] = useState('');
-  const logo = getLogo();
-
   const [countdown, setCountdown] = useState(30);
+  const [searchParams] = useSearchParams();
 
-  const [searchParams, setSearchParams] = useSearchParams();
   useEffect(() => {
-    let token = searchParams.get('token');
-    let email = searchParams.get('email');
     setInputs({
-      token,
-      email,
+      token: searchParams.get('token') || '',
+      email: searchParams.get('email') || '',
     });
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     let countdownInterval = null;
     if (disableButton && countdown > 0) {
       countdownInterval = setInterval(() => {
-        setCountdown(countdown - 1);
+        setCountdown((c) => c - 1);
       }, 1000);
     } else if (countdown === 0) {
       setDisableButton(false);
@@ -50,104 +35,92 @@ const PasswordResetConfirm = () => {
   }, [disableButton, countdown]);
 
   async function handleSubmit(e) {
-    setDisableButton(true);
+    e.preventDefault();
     if (!email) return;
+    setDisableButton(true);
     setLoading(true);
-    const res = await API.post(`/api/user/reset`, {
-      email,
-      token,
-    });
-    const { success, message } = res.data;
-    if (success) {
-      let password = res.data.data;
-      setNewPassword(password);
-      await copy(password);
-      showNotice(t('messages.notice.password_copied', { password }));
-    } else {
-      showError(message);
+    try {
+      const res = await API.post('/api/user/reset', { email, token });
+      const { success, message } = res.data;
+      if (success) {
+        const password = res.data.data;
+        setNewPassword(password);
+        await copy(password);
+        showNotice(t('messages.notice.password_copied', { password }));
+      } else {
+        showError(message);
+        setDisableButton(false);
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
+  const handleCopyPassword = async () => {
+    if (!newPassword) return;
+    await copy(newPassword);
+    showNotice(t('auth.reset.confirm.notice'));
+  };
+
   return (
-    <Grid textAlign='center' style={{ marginTop: '48px' }}>
-      <Grid.Column style={{ maxWidth: 450 }}>
-        <Card
-          fluid
-          className='chart-card'
-          style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.12)' }}
-        >
-          <Card.Content>
-            <Card.Header>
-              <Header
-                as='h2'
-                textAlign='center'
-                style={{ marginBottom: '1.5em' }}
-              >
-                <Image src={logo} style={{ marginBottom: '10px' }} />
-                <Header.Content>{t('auth.reset.confirm.title')}</Header.Content>
-              </Header>
-            </Card.Header>
-            <Form size='large'>
-              <Form.Input
-                fluid
-                icon='mail'
-                iconPosition='left'
-                placeholder={t('auth.reset.email')}
-                name='email'
-                value={email}
-                readOnly
-                style={{ marginBottom: '1em' }}
-              />
-              {newPassword && (
-                <Form.Input
-                  fluid
-                  icon='lock'
-                  iconPosition='left'
-                  placeholder={t('auth.reset.confirm.new_password')}
-                  name='newPassword'
-                  value={newPassword}
-                  readOnly
-                  style={{
-                    marginBottom: '1em',
-                    cursor: 'pointer',
-                    backgroundColor: '#f8f9fa',
-                  }}
-                  onClick={(e) => {
-                    e.target.select();
-                    navigator.clipboard.writeText(newPassword);
-                    showNotice(t('auth.reset.confirm.notice'));
-                  }}
-                />
-              )}
-              <Button
-                fluid
-                size='large'
-                onClick={handleSubmit}
-                loading={loading}
-                disabled={disableButton}
-                style={{
-                  background: '#2F73FF',
-                  color: 'white',
-                  marginBottom: '1.5em',
-                }}
-              >
-                {disableButton
-                  ? t('auth.reset.confirm.button_disabled')
-                  : t('auth.reset.confirm.button')}
-              </Button>
-            </Form>
-            {newPassword && (
-              <Message style={{ background: 'transparent', boxShadow: 'none' }}>
-                <p style={{ fontSize: '0.9em', color: '#666' }}>
-                  {t('auth.reset.confirm.notice')}
-                </p>
-              </Message>
-            )}
-          </Card.Content>
-        </Card>
-      </Grid.Column>
-    </Grid>
+    <AuthShell
+      title={t('auth.reset.confirm.title')}
+      subtitle={t('auth.reset.confirm.subtitle')}
+      brandDescription={t('auth.reset.brand_desc')}
+      footer={
+        <div className='muxi-auth-footer muxi-auth-footer--center'>
+          <Link to='/login' className='muxi-auth-link'>
+            {t('auth.reset.back_login')}
+          </Link>
+        </div>
+      }
+    >
+      <form onSubmit={handleSubmit}>
+        <div className='muxi-auth-field-stack'>
+          <Input
+            id='reset-confirm-email'
+            name='email'
+            type='email'
+            label={t('auth.reset.email')}
+            value={email}
+            readOnly
+          />
+
+          {newPassword && (
+            <Input
+              id='reset-confirm-password'
+              name='newPassword'
+              label={t('auth.reset.confirm.new_password')}
+              value={newPassword}
+              readOnly
+              mono
+              inputClassName='muxi-auth-password-display'
+              onClick={handleCopyPassword}
+            />
+          )}
+
+          <Button
+            type='submit'
+            variant='primary'
+            size='lg'
+            block
+            loading={loading}
+            disabled={disableButton || !!newPassword}
+            className='muxi-auth-submit'
+          >
+            {newPassword
+              ? t('auth.reset.confirm.button_disabled')
+              : disableButton
+                ? t('auth.register.get_code_retry', { countdown })
+                : t('auth.reset.confirm.button')}
+          </Button>
+        </div>
+      </form>
+
+      {newPassword && (
+        <p className='muxi-auth-notice'>{t('auth.reset.confirm.notice')}</p>
+      )}
+    </AuthShell>
   );
 };
 

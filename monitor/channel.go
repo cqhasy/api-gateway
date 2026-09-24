@@ -31,7 +31,7 @@ func notifyRootUser(subject string, content string) {
 func DisableChannel(channelId int, channelName string, reason string) {
 	model.UpdateChannelStatusById(channelId, model.ChannelStatusAutoDisabled)
 	logger.SysLog(fmt.Sprintf("channel #%d has been disabled: %s", channelId, reason))
-	subject := fmt.Sprintf("渠道状态变更提醒")
+	subject := "渠道状态变更提醒"
 	content := message.EmailTemplate(
 		subject,
 		fmt.Sprintf(`
@@ -47,7 +47,7 @@ func DisableChannel(channelId int, channelName string, reason string) {
 func MetricDisableChannel(channelId int, successRate float64) {
 	model.UpdateChannelStatusById(channelId, model.ChannelStatusAutoDisabled)
 	logger.SysLog(fmt.Sprintf("channel #%d has been disabled due to low success rate: %.2f", channelId, successRate*100))
-	subject := fmt.Sprintf("渠道状态变更提醒")
+	subject := "渠道状态变更提醒"
 	content := message.EmailTemplate(
 		subject,
 		fmt.Sprintf(`
@@ -64,7 +64,7 @@ func MetricDisableChannel(channelId int, successRate float64) {
 func EnableChannel(channelId int, channelName string) {
 	model.UpdateChannelStatusById(channelId, model.ChannelStatusEnabled)
 	logger.SysLog(fmt.Sprintf("channel #%d has been enabled", channelId))
-	subject := fmt.Sprintf("渠道状态变更提醒")
+	subject := "渠道状态变更提醒"
 	content := message.EmailTemplate(
 		subject,
 		fmt.Sprintf(`

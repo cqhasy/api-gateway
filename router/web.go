@@ -21,7 +21,9 @@ func SetWebRouter(router *gin.Engine, buildFS embed.FS) {
 	router.Use(middleware.Cache())
 	router.Use(static.Serve("/", common.EmbedFolder(buildFS, fmt.Sprintf("web/build/%s", config.Theme))))
 	router.NoRoute(func(c *gin.Context) {
-		if strings.HasPrefix(c.Request.RequestURI, "/v1") || strings.HasPrefix(c.Request.RequestURI, "/api") {
+		if strings.HasPrefix(c.Request.RequestURI, "/v1") ||
+			strings.HasPrefix(c.Request.RequestURI, "/api") ||
+			strings.HasPrefix(c.Request.RequestURI, "/anthropic") {
 			controller.RelayNotFound(c)
 			return
 		}

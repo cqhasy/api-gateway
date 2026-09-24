@@ -374,7 +374,7 @@ func Handler(c *gin.Context, resp *http.Response, promptTokens int, modelName st
 	}
 	c.Writer.Header().Set("Content-Type", "application/json")
 	c.Writer.WriteHeader(resp.StatusCode)
-	_, err = c.Writer.Write(jsonResponse)
+	_, _ = c.Writer.Write(jsonResponse)
 	return nil, &usage
 }
 
@@ -414,7 +414,7 @@ func PassthroughHandler(c *gin.Context, resp *http.Response) (*model.ErrorWithSt
 	// Write the raw Anthropic response back to the client
 	c.Writer.Header().Set("Content-Type", "application/json")
 	c.Writer.WriteHeader(resp.StatusCode)
-	_, err = c.Writer.Write(responseBody)
+	_, _ = c.Writer.Write(responseBody)
 	return nil, &usage
 }
 
@@ -439,32 +439,28 @@ func PassthroughStreamHandler(c *gin.Context, resp *http.Response) (*model.Error
 	var usage model.Usage
 
 	for scanner.Scan() {
-		data := scanner.Text()
-		if len(data) < 6 || !strings.HasPrefix(data, "data:") {
-			continue
-		}
-		innerData := strings.TrimPrefix(data, "data:")
-		innerData = strings.TrimSpace(innerData)
-
-		var claudeResponse StreamResponse
-		err := json.Unmarshal([]byte(innerData), &claudeResponse)
-		if err != nil {
-			logger.SysError("error unmarshalling stream response: " + err.Error())
-			continue
-		}
-
-		// Extract usage from message_start and message_delta events
-		if claudeResponse.Type == "message_start" && claudeResponse.Message != nil {
-			usage.PromptTokens += claudeResponse.Message.Usage.InputTokens
-			usage.CompletionTokens += claudeResponse.Message.Usage.OutputTokens
-		} else if claudeResponse.Type == "message_delta" && claudeResponse.Usage != nil {
-			usage.CompletionTokens += claudeResponse.Usage.OutputTokens
+		line := scanner.Text()
+		if strings.HasPrefix(line, "data:") {
+			innerData := strings.TrimSpace(strings.TrimPrefix(line, "data:"))
+			if innerData != "" && innerData != "[DONE]" {
+				var claudeResponse StreamResponse
+				if err := json.Unmarshal([]byte(innerData), &claudeResponse); err == nil {
+					if claudeResponse.Type == "message_start" && claudeResponse.Message != nil {
+						usage.PromptTokens += claudeResponse.Message.Usage.InputTokens
+						usage.CompletionTokens += claudeResponse.Message.Usage.OutputTokens
+					} else if claudeResponse.Type == "message_delta" && claudeResponse.Usage != nil {
+						usage.CompletionTokens += claudeResponse.Usage.OutputTokens
+					}
+				}
+			}
 		}
 
-		// Pass through the raw SSE data as-is
-		_, err = c.Writer.Write([]byte(data + "\n\n"))
-		if err != nil {
+		if _, err := c.Writer.Write([]byte(line + "\n")); err != nil {
 			logger.SysError("error writing stream data: " + err.Error())
+			break
+		}
+		if flusher, ok := c.Writer.(http.Flusher); ok {
+			flusher.Flush()
 		}
 	}
 

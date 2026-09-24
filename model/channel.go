@@ -73,12 +73,11 @@ func SearchChannels(keyword string) (channels []*Channel, err error) {
 
 func GetChannelById(id int, selectAll bool) (*Channel, error) {
 	channel := Channel{Id: id}
-	var err error = nil
 	if selectAll {
-		err = DB.First(&channel, "id = ?", id).Error
-	} else {
-		err = DB.Omit("key").First(&channel, "id = ?", id).Error
+		err := DB.First(&channel, "id = ?", id).Error
+		return &channel, err
 	}
+	err := DB.Omit("key").First(&channel, "id = ?", id).Error
 	return &channel, err
 }
 
@@ -94,6 +93,7 @@ func BatchInsertChannels(channels []Channel) error {
 			return err
 		}
 	}
+	refreshChannelCacheIfNeeded()
 	return nil
 }
 
@@ -131,7 +131,11 @@ func (channel *Channel) Insert() error {
 		return err
 	}
 	err = channel.AddAbilities()
-	return err
+	if err != nil {
+		return err
+	}
+	refreshChannelCacheIfNeeded()
+	return nil
 }
 
 func (channel *Channel) Update() error {
@@ -142,7 +146,11 @@ func (channel *Channel) Update() error {
 	}
 	DB.Model(channel).First(channel, "id = ?", channel.Id)
 	err = channel.UpdateAbilities()
-	return err
+	if err != nil {
+		return err
+	}
+	refreshChannelCacheIfNeeded()
+	return nil
 }
 
 func (channel *Channel) UpdateResponseTime(responseTime int64) {
@@ -172,7 +180,11 @@ func (channel *Channel) Delete() error {
 		return err
 	}
 	err = channel.DeleteAbilities()
-	return err
+	if err != nil {
+		return err
+	}
+	refreshChannelCacheIfNeeded()
+	return nil
 }
 
 func (channel *Channel) LoadConfig() (ChannelConfig, error) {
@@ -195,7 +207,9 @@ func UpdateChannelStatusById(id int, status int) {
 	err = DB.Model(&Channel{}).Where("id = ?", id).Update("status", status).Error
 	if err != nil {
 		logger.SysError("failed to update channel status: " + err.Error())
+		return
 	}
+	refreshChannelCacheIfNeeded()
 }
 
 func UpdateChannelUsedQuota(id int, quota int64) {
@@ -220,5 +234,9 @@ func DeleteChannelByStatus(status int64) (int64, error) {
 
 func DeleteDisabledChannel() (int64, error) {
 	result := DB.Where("status = ? or status = ?", ChannelStatusAutoDisabled, ChannelStatusManuallyDisabled).Delete(&Channel{})
-	return result.RowsAffected, result.Error
+	if result.Error != nil {
+		return result.RowsAffected, result.Error
+	}
+	refreshChannelCacheIfNeeded()
+	return result.RowsAffected, nil
 }

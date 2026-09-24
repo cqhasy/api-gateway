@@ -77,4 +77,9 @@ func SetRelayRouter(router *gin.Engine) {
 	{
 		anthropicRouter.POST("/messages", controller.Relay)
 	}
+	anthropicModelsRouter := router.Group("/anthropic/v1/models")
+	anthropicModelsRouter.Use(middleware.TokenAuth())
+	{
+		anthropicModelsRouter.GET("", controller.ListAnthropicModels)
+	}
 }

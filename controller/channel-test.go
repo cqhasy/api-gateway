@@ -210,7 +210,6 @@ func TestChannel(c *gin.Context) {
 		"time":      consumedTime,
 		"modelName": modelName,
 	})
-	return
 }
 
 var testAllChannelsLock sync.Mutex
@@ -291,7 +290,6 @@ func TestChannels(c *gin.Context) {
 		"success": true,
 		"message": "",
 	})
-	return
 }
 
 func AutomaticallyTestChannels(frequency int) {

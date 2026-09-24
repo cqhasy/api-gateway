@@ -229,10 +229,6 @@ func SearchLogsByDayAndModel(userId, start, end int) (LogStatistics []*LogStatis
 		groupSelect = "TO_CHAR(date_trunc('day', to_timestamp(created_at)), 'YYYY-MM-DD') as day"
 	}
 
-	if common.UsingSQLite {
-		groupSelect = "strftime('%Y-%m-%d', datetime(created_at, 'unixepoch')) as day"
-	}
-
 	err = LOG_DB.Raw(`
 		SELECT `+groupSelect+`,
 		model_name, count(1) as request_count,
